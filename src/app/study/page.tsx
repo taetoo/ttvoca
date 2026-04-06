@@ -74,10 +74,10 @@ export default function StudyPage() {
       // 학습 모드별 데이터 필터링
       if (learningMode === 'day') {
         // 날짜별 (선택된 Day의 단어 중 데이터에 기록되지 않은 미학습 단어만 노출)
-        studyList = allWords.filter(w => w.day?.endsWith(learningDay.toString()))
+        studyList = allWords.filter(w => w.day === `Day ${learningDay}`)
         
         // 날짜별 학습일 때 전체 개수 산정
-        const dayWords = allWords.filter(w => w.day?.endsWith(learningDay.toString()))
+        const dayWords = allWords.filter(w => w.day === `Day ${learningDay}`)
         setTotalDayCount(dayWords.length)
         const memorizedInDay = dayWords.filter(w => statusMap.get(w.id) === 'memorized').length
         setMemorizedCount(memorizedInDay)
