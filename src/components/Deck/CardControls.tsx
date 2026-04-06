@@ -6,7 +6,7 @@ interface CardControlsProps {
 
 export default function CardControls({ onAction }: CardControlsProps) {
   return (
-    <div className="flex justify-center items-center gap-5 mt-auto mb-8 z-20">
+    <div className="flex justify-center items-center gap-5 mt-auto mb-16 z-20">
       <div className="flex flex-col items-center gap-2">
         <button 
           onClick={() => onAction('left')}

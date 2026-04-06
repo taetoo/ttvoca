@@ -148,7 +148,7 @@ export default function DashboardPage() {
       </main>
 
       {/* Start Button Fixed at Bottom */}
-      <div className="fixed bottom-[88px] left-0 right-0 px-6 z-20 pointer-events-none bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pt-12">
+      <div className="fixed bottom-[110px] left-0 right-0 px-6 z-20 pointer-events-none bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pt-12 pb-2">
         <button 
           onClick={handleStart}
           className="w-full flex items-center justify-center gap-2 py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl font-bold text-lg shadow-xl hover:bg-gray-800 dark:hover:bg-white active:scale-[0.98] transition-all pointer-events-auto"

@@ -148,7 +148,7 @@ export default function SettingsPage() {
         </section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pointer-events-none">
+      <div className="fixed bottom-0 left-0 right-0 p-6 pt-12 pb-12 bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pointer-events-none">
         <button
           onClick={handleStart}
           className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl font-bold text-lg shadow-lg hover:bg-gray-800 dark:hover:bg-white active:scale-95 transition-all pointer-events-auto"

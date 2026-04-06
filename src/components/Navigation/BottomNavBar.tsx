@@ -7,7 +7,7 @@ interface NavProps {
 
 export default function BottomNavBar({ currentTab }: NavProps) {
   return (
-    <nav className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-safe pt-2 px-6 flex justify-between items-center shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-50 transition-colors">
+    <nav className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-8 pt-3 px-6 flex justify-between items-center shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-50 transition-colors">
       <Link href="/" className={`flex flex-col items-center p-2 rounded-xl transition-colors w-16 ${currentTab === 'home' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
         <Home size={24} strokeWidth={currentTab === 'home' ? 3 : 2} className={currentTab === 'home' ? '-mt-1' : ''} />
         <span className="text-[10px] font-bold mt-1">학습</span>
