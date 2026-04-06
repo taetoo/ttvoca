@@ -94,6 +94,17 @@ export default function StudyTutorial({ onComplete }: StudyTutorialProps) {
               <p className="text-xs text-gray-500">단어의 뜻 확인하기</p>
             </div>
           </div>
+
+          {/* Counter Guide */}
+          <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-500">
+              <span className="font-black text-xs">COUNT</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-gray-900 dark:text-white">상단 숫자 안내</p>
+              <p className="text-xs text-gray-500">완벽히 외운 단어(오른쪽 스와이프)만 카운트에서 제외되며, 나머지는 반복 노출됩니다.</p>
+            </div>
+          </div>
         </div>
 
         <button

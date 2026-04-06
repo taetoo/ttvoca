@@ -7,8 +7,8 @@ import { getFlatWords, WordItem } from '@/utils/words'
 import { useSettingStore } from '@/store/settingStore'
 import Flashcard from '@/components/Deck/Flashcard'
 import CardControls from '@/components/Deck/CardControls'
-import { AnimatePresence } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowLeft, HelpCircle } from 'lucide-react'
 import { User } from '@supabase/supabase-js'
 import StudyTutorial from '@/components/Deck/StudyTutorial'
 
@@ -31,6 +31,9 @@ export default function StudyPage() {
   const [deck, setDeck] = useState<WordItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showTutorial, setShowTutorial] = useState(false)
+  const [totalDayCount, setTotalDayCount] = useState(0)
+  const [memorizedCount, setMemorizedCount] = useState(0)
+  const [showTooltip, setShowTooltip] = useState(false)
 
   useEffect(() => {
     const hasSeen = localStorage.getItem('hasSeenStudyTutorial')
@@ -72,7 +75,14 @@ export default function StudyPage() {
       if (learningMode === 'day') {
         // 날짜별 (선택된 Day의 단어 중 데이터에 기록되지 않은 미학습 단어만 노출)
         studyList = allWords.filter(w => w.day?.endsWith(learningDay.toString()))
-        studyList = studyList.filter(w => !statusMap.has(w.id))
+        
+        // 날짜별 학습일 때 전체 개수 산정
+        const dayWords = allWords.filter(w => w.day?.endsWith(learningDay.toString()))
+        setTotalDayCount(dayWords.length)
+        const memorizedInDay = dayWords.filter(w => statusMap.get(w.id) === 'memorized').length
+        setMemorizedCount(memorizedInDay)
+
+        studyList = studyList.filter(w => statusMap.get(w.id) !== 'memorized')
       } 
       else if (learningMode === 'random') {
         // 랜덤: 모든 단어 중 기록되지 않은 미학습 단어만 섞은 후, 최대 50개(청크) 로드
@@ -99,7 +109,16 @@ export default function StudyPage() {
     if (direction === 'left') newStatus = 'unknown'
 
     // Remove top card locally immediately
-    setDeck(prev => prev.slice(1))
+    if (direction === 'right') {
+      setDeck(prev => prev.slice(1))
+      setMemorizedCount(prev => prev + 1)
+    } else {
+      // '모름' 또는 '헷갈림'인 경우 카드를 맨 뒤로 보냄
+      setDeck(prev => {
+        const [current, ...rest] = prev
+        return [...rest, current]
+      })
+    }
 
     if (user) {
       await supabase
@@ -125,9 +144,36 @@ export default function StudyPage() {
         </button>
         <div className="flex items-center gap-3">
           {!loading && (
-            <span className="text-xs font-bold px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 shadow-sm transition-colors">
-              {deck.length} 단어 남음
-            </span>
+            <div className="relative">
+              <button 
+                onClick={() => setShowTooltip(!showTooltip)}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95"
+              >
+                <span className="text-xs font-bold">
+                  {learningMode === 'day' ? `${totalDayCount - memorizedCount} 단어 남음` : `${deck.length} 단어 남음`}
+                </span>
+                <HelpCircle size={14} className="text-gray-400" />
+              </button>
+              
+              {/* Tooltip */}
+              <AnimatePresence>
+                {showTooltip && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-10 right-0 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-xl shadow-xl z-50 pointer-events-none font-medium leading-relaxed"
+                  >
+                    {learningMode === 'day' 
+                      ? `전체 ${totalDayCount}개 중 '완벽히 외움' 처리되지 않은 남은 단어 수입니다.` 
+                      : "현재 학습 세션에 포함된 남은 단어 수입니다."}
+                    <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-900 dark:bg-white rotate-45" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
         </div>
       </header>
