@@ -45,8 +45,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors">
-      <header className="px-6 py-6 flex justify-between items-center z-10 sticky top-0">
+    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+      <header className="px-6 py-4 flex justify-between items-center z-10 sticky top-0">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">TTVOCA</h1>
           <p className="text-[10px] font-bold text-[#DD7553] tracking-wider uppercase opacity-80 mt-0.5">Fast words, High scores</p>

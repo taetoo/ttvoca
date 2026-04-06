@@ -90,12 +90,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 px-6 pt-12 pb-32 font-sans text-gray-900 dark:text-gray-100 transition-colors">
-      <h1 className="text-3xl font-extrabold mb-12">학습 설정</h1>
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(8rem+env(safe-area-inset-bottom))] font-sans text-gray-900 dark:text-gray-100 transition-colors">
+      <h1 className="text-3xl font-extrabold mb-8">학습 설정</h1>
 
-      <div className="space-y-14">
+      <div className="space-y-10">
         {/* Simplified Welcome Section */}
-        <div className="mb-10 px-1">
+        <div className="mb-6 px-1">
           <p className="text-gray-500 dark:text-gray-400 font-bold text-sm mb-1">오늘도 화이팅!</p>
           <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100">
             안녕하세요, <span className="text-indigo-500">{profile?.nickname || '회원'}</span>님!
@@ -207,7 +207,7 @@ export default function SettingsPage() {
         </section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 pt-12 pb-12 bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pointer-events-none">
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-12 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pointer-events-none">
         <button
           onClick={handleStart}
           className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl font-bold text-lg shadow-lg hover:bg-gray-800 dark:hover:bg-white active:scale-95 transition-all pointer-events-auto"

@@ -106,8 +106,8 @@ export default function StudyPage() {
   const currentWord = deck[0]
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors">
-      <header className="px-6 py-6 flex justify-between items-center z-10 w-full">
+    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+      <header className="px-6 py-2 flex justify-between items-center z-10 w-full shrink-0">
         <button 
           onClick={() => router.push('/dashboard')}
           className="p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
@@ -116,14 +116,14 @@ export default function StudyPage() {
         </button>
         <div className="flex items-center gap-3">
           {!loading && (
-            <span className="text-sm font-bold px-4 py-2 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 shadow-sm transition-colors">
+            <span className="text-xs font-bold px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 shadow-sm transition-colors">
               {deck.length} 단어 남음
             </span>
           )}
         </div>
       </header>
       
-      <main className="flex-1 relative flex flex-col items-center justify-center px-6 -mt-10">
+      <main className="flex-1 relative flex flex-col items-center justify-center px-6 min-h-0">
         {loading ? (
           <div className="animate-pulse flex flex-col items-center mt-20">
             <div className="w-12 h-12 border-4 border-gray-100 dark:border-gray-800 border-t-indigo-500 dark:border-t-indigo-500 rounded-full animate-spin mb-4" />

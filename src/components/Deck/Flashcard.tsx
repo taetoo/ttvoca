@@ -47,7 +47,7 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
 
   return (
     <motion.div
-      className="absolute w-full h-[60vh] max-h-[500px] flex items-center justify-center cursor-grab active:cursor-grabbing perspective-1000 z-10"
+      className="absolute w-full h-[55vh] max-h-[480px] flex items-center justify-center cursor-grab active:cursor-grabbing perspective-1000 z-10"
       style={{ x, y, rotate }}
       drag
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -74,24 +74,24 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
               {word.day}
             </span>
           )}
-          <h2 className="text-5xl font-extrabold text-gray-900 dark:text-gray-100 text-center tracking-tight break-words px-4 leading-tight">
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-gray-100 text-center tracking-tight break-words px-4 leading-tight">
             {word.word}
           </h2>
           
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={(e) => playWord(e, word.word, 'en-US')}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-xs font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
               aria-label="미국식 발음 듣기"
             >
-              🇺🇸 US <span className="text-lg">🔊</span>
+              🇺🇸 US 🔊
             </button>
             <button
               onClick={(e) => playWord(e, word.word, 'en-GB')}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-xs font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
               aria-label="영국식 발음 듣기"
             >
-              🇬🇧 UK <span className="text-lg">🔊</span>
+              🇬🇧 UK 🔊
             </button>
           </div>
           <div className="absolute bottom-8 flex flex-col items-center gap-1 text-gray-400 dark:text-gray-400">

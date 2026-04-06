@@ -16,6 +16,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'TTVoca',
   description: '태투의 토익 보카입니다.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'TTVoca',
+  },
+  icons: {
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'TTVoca',
     description: '태투의 토익 보카입니다.',
@@ -28,6 +37,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
