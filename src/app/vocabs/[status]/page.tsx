@@ -11,6 +11,52 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { User } from '@supabase/supabase-js'
 import { WordItem } from '@/utils/words'
 
+function VocabCard({ word }: { word: WordItem }) {
+  const [isRevealed, setIsRevealed] = useState(false)
+
+  return (
+    <motion.div 
+      layout
+      onClick={() => setIsRevealed(!isRevealed)}
+      className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
+    >
+      <div className="flex-1">
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-0">{word.word}</h3>
+          {word.day && (
+            <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 uppercase tracking-tighter">
+              {word.day}
+            </span>
+          )}
+        </div>
+        <AnimatePresence mode="wait">
+          {isRevealed ? (
+            <motion.p 
+              key="meaning"
+              initial={{ opacity: 0, y: -5 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0 }}
+              className="text-sm font-bold text-gray-600 dark:text-gray-300 mt-1"
+            >
+              {word.meaning}
+            </motion.p>
+          ) : (
+            <motion.p 
+              key="hint"
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              className="text-sm font-bold text-gray-300 dark:text-gray-600 mt-1"
+            >
+              터치해서 뜻 확인
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function VocabListPage() {
   const params = useParams()
   const status = params.status as string // 'unknown' | 'confused' | 'memorized'
@@ -20,7 +66,6 @@ export default function VocabListPage() {
   const [list, setList] = useState<WordItem[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({})
 
   const titleMap: Record<string, string> = {
     unknown: '못 외운 단어',
@@ -60,18 +105,14 @@ export default function VocabListPage() {
         allWords = allWords.filter(w => w.grade?.includes(targetScore.toString()))
       }
 
-      let filtered = allWords.filter(w => wordIds.has(w.id))
+      const filtered = allWords.filter(w => wordIds.has(w.id))
 
       setList(filtered)
       setLoading(false)
     }
 
     fetchList()
-  }, [status, router, targetScore])
-
-  const toggleReveal = (id: number) => {
-    setRevealed(prev => ({ ...prev, [id]: !prev[id] }))
-  }
+  }, [status, router, targetScore, supabase])
 
   return (
     <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 font-sans transition-colors">
@@ -93,46 +134,7 @@ export default function VocabListPage() {
           </div>
         ) : list.length > 0 ? (
           list.map(word => (
-            <motion.div 
-              key={word.id} 
-              layout
-              onClick={() => toggleReveal(word.id)}
-              className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-0">{word.word}</h3>
-                  {word.day && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 uppercase tracking-tighter">
-                      {word.day}
-                    </span>
-                  )}
-                </div>
-                <AnimatePresence mode="wait">
-                  {revealed[word.id] ? (
-                    <motion.p 
-                      key="meaning"
-                      initial={{ opacity: 0, y: -5 }} 
-                      animate={{ opacity: 1, y: 0 }} 
-                      exit={{ opacity: 0 }}
-                      className="text-sm font-bold text-gray-600 dark:text-gray-300 mt-1"
-                    >
-                      {word.meaning}
-                    </motion.p>
-                  ) : (
-                    <motion.p 
-                      key="hint"
-                      initial={{ opacity: 0 }} 
-                      animate={{ opacity: 1 }} 
-                      exit={{ opacity: 0 }}
-                      className="text-sm font-bold text-gray-300 dark:text-gray-600 mt-1"
-                    >
-                      터치해서 뜻 확인
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
+            <VocabCard key={word.id} word={word} />
           ))
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 font-bold mt-20">
@@ -142,7 +144,8 @@ export default function VocabListPage() {
         )}
       </main>
 
-      {user && <BottomNavBar currentTab={status as any} />}
+      {user && <BottomNavBar currentTab={status as 'unknown' | 'confused' | 'memorized'} />}
     </div>
   )
 }
+

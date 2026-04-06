@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [isLoginMode, setIsLoginMode] = useState(true)
   
   const [email, setEmail] = useState('')
+  const [nickname, setNickname] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [inviteCode, setInviteCode] = useState('')
@@ -40,6 +41,13 @@ export default function LoginPage() {
       : '비밀번호는 소문자, 숫자, 특수문자를 모두 포함해야 합니다.'
   }, [password])
 
+  const nicknameError = useMemo(() => {
+    if (!nickname) return ''
+    if (nickname.length < 2) return '별명은 2자리 이상이어야 합니다.'
+    if (nickname.length > 10) return '별명은 10자리 이내이어야 합니다.'
+    return ''
+  }, [nickname])
+
   const passwordConfirmError = useMemo(() => {
     if (!passwordConfirm) return ''
     return password === passwordConfirm ? '' : '비밀번호 확인이 일치하지 않습니다.'
@@ -50,8 +58,8 @@ export default function LoginPage() {
     
     // 가입 모드일 때 에러가 남아 있거나 빈 값이면 전송 차단
     if (!isLoginMode) {
-      if (emailError || passwordError || passwordConfirmError || inviteCodeError) return
-      if (!email || !password || !passwordConfirm || !inviteCode) {
+      if (emailError || passwordError || passwordConfirmError || inviteCodeError || nicknameError) return
+      if (!email || !password || !passwordConfirm || !inviteCode || !nickname) {
         alert('모든 필드를 올바르게 입력해주세요.')
         return
       }
@@ -72,10 +80,15 @@ export default function LoginPage() {
         router.push('/settings')
       }
     } else {
-      // 2. 회원가입 모드
+      // 2. 회원가입 모드 (트리거가 프로필을 생성하도록 metadata 포함)
       const { error: signUpError } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: {
+            nickname: nickname
+          }
+        }
       })
       
       if (signUpError) {
@@ -87,6 +100,7 @@ export default function LoginPage() {
         setPassword('')
         setPasswordConfirm('')
         setInviteCode('')
+        setNickname('')
       }
     }
     
@@ -133,6 +147,21 @@ export default function LoginPage() {
             />
             {!isLoginMode && emailError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{emailError}</p>}
           </div>
+
+          {!isLoginMode && (
+            <div>
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value.slice(0, 10))}
+                  placeholder="별명 (10자 이내)"
+                  className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${nicknameError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+                  required
+                  maxLength={10}
+                />
+              {nicknameError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{nicknameError}</p>}
+            </div>
+          )}
           
           <div>
             <input

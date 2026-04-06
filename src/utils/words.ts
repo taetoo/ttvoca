@@ -34,7 +34,7 @@ export function getFlatWords(): WordItem[] {
     for (const [day, wordObj] of Object.entries(days as Record<string, Record<string, string>>)) {
       for (const [word, meaning] of Object.entries(wordObj)) {
         flatArray.push({
-          id: hashStringToNumber(word),
+          id: hashStringToNumber(`${grade}-${day}-${word}`),
           word: word,
           meaning: meaning,
           grade,

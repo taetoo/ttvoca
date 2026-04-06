@@ -22,3 +22,7 @@ create policy "Users can insert own word status."
 create policy "Users can update own word status."
   on public.user_word_status for update
   using (auth.uid() = user_id);
+
+create policy "Users can delete own word status."
+  on public.user_word_status for delete
+  using (auth.uid() = user_id);

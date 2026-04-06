@@ -81,7 +81,7 @@ export default function StudyPage() {
     }
 
     fetchUserAndData()
-  }, [targetScore, learningMode, learningDay, router])
+  }, [targetScore, learningMode, learningDay, router, supabase])
 
   const handleSwipe = async (direction: 'left' | 'right' | 'up', wordId: number) => {
     let newStatus = 'unknown'
@@ -109,7 +109,7 @@ export default function StudyPage() {
     <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors">
       <header className="px-6 py-6 flex justify-between items-center z-10 w-full">
         <button 
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/dashboard')}
           className="p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
         >
           <ArrowLeft size={24} />
@@ -143,7 +143,7 @@ export default function StudyPage() {
             <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">학습 완료!</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">모든 단어를 완벽하게 숙지했습니다.</p>
             <button 
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/dashboard')}
               className="mt-6 w-full py-4 bg-indigo-500 text-white rounded-xl font-bold hover:bg-indigo-600 active:scale-95 transition-all"
             >
               대시보드로 돌아가기
