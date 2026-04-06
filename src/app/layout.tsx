@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: 'TTVoca',
   },
   icons: {
-    apple: '/logo.png',
+    apple: '/app-icon.jpg',
   },
   openGraph: {
     title: 'TTVoca',
