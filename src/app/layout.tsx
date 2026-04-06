@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'TTVOCA',
-  description: 'Fast words, High scores',
+  title: 'TTVoca',
+  description: '태투의 토익 보카입니다.',
+  openGraph: {
+    title: 'TTVoca',
+    description: '태투의 토익 보카입니다.',
+    images: [{ url: '/og-image.jpg' }],
+  },
 };
 
 export const viewport: Viewport = {
