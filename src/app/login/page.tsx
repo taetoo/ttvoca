@@ -7,7 +7,6 @@ import { LogIn, UserPlus } from 'lucide-react'
 
 export default function LoginPage() {
   const [isLoginMode, setIsLoginMode] = useState(true)
-  const [isVerificationSent, setIsVerificationSent] = useState(false)
   
   const [email, setEmail] = useState('')
   const [nickname, setNickname] = useState('')
@@ -95,9 +94,9 @@ export default function LoginPage() {
       if (signUpError) {
         alert('회원가입 실패: ' + signUpError.message)
       } else {
-        // 가입 완료 후 인증 메일 확인 안내 화면으로 전환
-        setIsVerificationSent(true)
-        // 폼 초기화는 안내 화면 이후에 진행됨
+        alert('가입이 완료되었습니다! 동일한 계정으로 로그인해주세요.')
+        // 로그인 상태로 폼 변경 및 초기화
+        setIsLoginMode(true)
         setPassword('')
         setPasswordConfirm('')
         setInviteCode('')
@@ -106,57 +105,6 @@ export default function LoginPage() {
     }
     
     setLoading(false)
-  }
-
-  // 이메일 서비스 링크 도우미
-  const getEmailLink = (emailAddr: string) => {
-    const domain = emailAddr.split('@')[1]?.toLowerCase()
-    if (!domain) return 'https://mail.google.com'
-    
-    if (domain.includes('gmail')) return 'https://mail.google.com'
-    if (domain.includes('naver')) return 'https://mail.naver.com'
-    if (domain.includes('daum') || domain.includes('hanmail') || domain.includes('kakao')) return 'https://mail.kakao.com'
-    if (domain.includes('outlook') || domain.includes('hotmail')) return 'https://outlook.live.com'
-    if (domain.includes('nate')) return 'https://mail3.nate.com'
-    
-    return `https://${domain}`
-  }
-
-  // 인증 안내 화면 렌더링
-  if (isVerificationSent) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#C2FF26] dark:bg-gray-950 px-6 font-sans">
-        <div className="w-full max-w-sm bg-white dark:bg-gray-900 px-8 py-10 rounded-[2rem] shadow-2xl border border-white/50 dark:border-gray-800 text-center">
-          <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-            <UserPlus className="text-[#DD7553] w-10 h-10" />
-          </div>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-2">인증 메일 발송 완료!</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-            <span className="font-bold text-[#DD7553]">{email}</span> 주소로<br /> 인증 메일을 보냈습니다. 메일함의 링크를 클릭하여 가입을 완료해 주세요.
-          </p>
-          
-          <div className="space-y-3">
-            <a 
-              href={getEmailLink(email)} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full py-4 bg-[#DD7553] text-white rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#E54833] transition-all shadow-md"
-            >
-              메일함으로 이동하기
-            </a>
-            <button
-              onClick={() => {
-                setIsVerificationSent(false)
-                setIsLoginMode(true)
-              }}
-              className="w-full py-4 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
-            >
-              로그인 화면으로 돌아가기
-            </button>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
