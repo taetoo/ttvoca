@@ -1,18 +1,39 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Target, Moon, Sun, Monitor, LogOut, User } from 'lucide-react'
+import { Target, Moon, Sun, Monitor, LogOut, User, RotateCcw } from 'lucide-react'
 import { useSettingStore } from '@/store/settingStore'
 import { createClient } from '@/utils/supabase/client'
+import { useState } from 'react'
 
 export default function SettingsPage() {
   const { targetScore, setTargetScore, theme, setTheme } = useSettingStore()
   const router = useRouter()
   const supabase = createClient()
 
+  const [isResetting, setIsResetting] = useState(false)
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  const handleResetData = async () => {
+    if (!confirm('경고: 모든 학습 기록(외운 단어, 못 외운 단어 등)이 영구적으로 삭제됩니다. 계속하시겠습니까?')) {
+      return
+    }
+
+    setIsResetting(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      await supabase
+        .from('user_word_status')
+        .delete()
+        .eq('user_id', session.user.id)
+      
+      alert('학습 기록이 성공적으로 초기화되었습니다.')
+    }
+    setIsResetting(false)
   }
 
   const handleStart = () => {
@@ -103,15 +124,27 @@ export default function SettingsPage() {
         <section>
           <div className="flex items-center gap-2 mb-4">
             <User className="text-emerald-500" />
-            <h2 className="text-xl font-bold">계정</h2>
+            <h2 className="text-xl font-bold">계정 및 데이터 관리</h2>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
-          >
-            <LogOut size={20} />
-            로그아웃
-          </button>
+          
+          <div className="space-y-3">
+            <button
+              onClick={handleResetData}
+              disabled={isResetting}
+              className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <RotateCcw size={20} className={isResetting ? 'animate-spin' : ''} />
+              {isResetting ? '초기화 중...' : '모든 학습 기록 초기화'}
+            </button>
+            
+            <button
+              onClick={handleLogout}
+              className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+            >
+              <LogOut size={20} />
+              로그아웃
+            </button>
+          </div>
         </section>
       </div>
 
