@@ -10,6 +10,7 @@ import CardControls from '@/components/Deck/CardControls'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { User } from '@supabase/supabase-js'
+import StudyTutorial from '@/components/Deck/StudyTutorial'
 
 // Fisher-Yates Shuffle
 function shuffleArray<T>(array: T[]): T[] {
@@ -29,6 +30,14 @@ export default function StudyPage() {
   
   const [deck, setDeck] = useState<WordItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [showTutorial, setShowTutorial] = useState(false)
+
+  useEffect(() => {
+    const hasSeen = localStorage.getItem('hasSeenStudyTutorial')
+    if (!hasSeen) {
+      setShowTutorial(true)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchUserAndData = async () => {
@@ -154,6 +163,16 @@ export default function StudyPage() {
 
       {/* Card Controls */}
       {user && deck.length > 0 && <CardControls onAction={(dir) => handleSwipe(dir, currentWord.id)} />}
+
+      {/* Onboarding Tutorial */}
+      {showTutorial && (
+        <StudyTutorial 
+          onComplete={() => {
+            localStorage.setItem('hasSeenStudyTutorial', 'true')
+            setShowTutorial(false)
+          }} 
+        />
+      )}
     </div>
   )
 }
