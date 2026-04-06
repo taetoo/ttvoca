@@ -21,6 +21,19 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
   const bgSuccess = useTransform(x, [0, 100], [0, 0.3])  // Right (Green)
   const bgConfused = useTransform(y, [-100, 0], [0.3, 0]) // Up (Yellow)
 
+  const playWord = (e: React.MouseEvent, text: string, lang: 'en-US' | 'en-GB') => {
+    e.stopPropagation(); // 브라우저가 클릭 이벤트를 부모(Flip)로 전달하는 것을 막음
+    
+    // 내부 프록시 API를 호출하여 브라우저 CORS 및 403 에러 우회
+    const url = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}`;
+    const audio = new Audio(url);
+    
+    audio.play().catch(error => {
+      console.error("Audio playback error:", error);
+      alert('발음 재생에 실패했습니다.');
+    });
+  };
+
   const handleDragEnd = (_: any, info: PanInfo) => {
     const swipeThreshold = 100
     if (info.offset.x < -swipeThreshold) {
@@ -64,6 +77,23 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
           <h2 className="text-5xl font-extrabold text-gray-900 dark:text-gray-100 text-center tracking-tight break-words px-4 leading-tight">
             {word.word}
           </h2>
+          
+          <div className="flex gap-4 mt-6">
+            <button
+              onClick={(e) => playWord(e, word.word, 'en-US')}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              aria-label="미국식 발음 듣기"
+            >
+              🇺🇸 US <span className="text-lg">🔊</span>
+            </button>
+            <button
+              onClick={(e) => playWord(e, word.word, 'en-GB')}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              aria-label="영국식 발음 듣기"
+            >
+              🇬🇧 UK <span className="text-lg">🔊</span>
+            </button>
+          </div>
           <div className="absolute bottom-8 flex flex-col items-center gap-1 text-gray-400 dark:text-gray-400">
             <span className="text-xl">👇</span>
             <span className="text-xs font-medium">탭해서 뒷면 보기</span>
