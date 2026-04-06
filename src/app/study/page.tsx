@@ -167,7 +167,7 @@ export default function StudyPage() {
                     className="absolute top-10 right-0 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-xl shadow-xl z-50 pointer-events-none font-medium leading-relaxed"
                   >
                     {learningMode === 'day' 
-                      ? `전체 ${totalDayCount}개 중 '완벽히 외움' 처리되지 않은 남은 단어 수입니다.` 
+                      ? `Day ${learningDay}에서 '완벽히 외움' 처리되지 않은 남은 단어 수입니다.` 
                       : "현재 학습 세션에 포함된 남은 단어 수입니다."}
                     <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-900 dark:bg-white rotate-45" />
                   </motion.div>
