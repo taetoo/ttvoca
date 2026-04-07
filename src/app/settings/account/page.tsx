@@ -149,17 +149,17 @@ export default function AccountPage() {
         className="flex items-center gap-2 text-text-secondary font-black mb-8 hover:text-foreground transition-all w-fit bg-surface border-2 border-foreground px-4 py-2 rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
       >
         <ArrowLeft size={18} strokeWidth={3} />
-        BACK
+        뒤로 가기
       </button>
 
-      <h1 className="text-4xl font-black mb-12 tracking-tighter uppercase">Account Settings</h1>
+      <h1 className="text-4xl font-black mb-12 tracking-tighter uppercase">계정 설정</h1>
 
       <div className="space-y-10">
         {/* Email Display (Read-only) */}
         <section className="bg-surface p-8 rounded-[2rem] border-4 border-foreground shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none">
           <div className="flex items-center gap-2 mb-4 text-text-secondary opacity-50">
             <User size={18} strokeWidth={3} />
-            <span className="text-xs font-black tracking-widest uppercase">Email (Permanent)</span>
+            <span className="text-xs font-black tracking-widest uppercase">이메일 (변경 불가)</span>
           </div>
           <p className="text-2xl font-black px-1 tracking-tight">{user?.email}</p>
         </section>
@@ -169,14 +169,14 @@ export default function AccountPage() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="text-memorized" size={24} strokeWidth={3} />
-              <h2 className="text-2xl font-black uppercase tracking-tight">Nickname</h2>
+              <h2 className="text-2xl font-black uppercase tracking-tight">별명 관리</h2>
             </div>
             {!isEditingNickname && (
               <button 
                 onClick={() => setIsEditingNickname(true)}
                 className="text-foreground font-black text-xs bg-primary border-2 border-foreground px-5 py-2.5 rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
               >
-                EDIT
+                변경
               </button>
             )}
           </div>
@@ -185,14 +185,14 @@ export default function AccountPage() {
             {isEditingNickname ? (
               <>
                 <div>
-                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">New Nickname (2-10 chars)</p>
+                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">새 별명 (2~10자)</p>
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value.slice(0, 10))}
                     maxLength={10}
                     className="w-full px-5 py-4 bg-white dark:bg-gray-800 border-4 border-foreground rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-black text-xl tracking-tight"
-                    placeholder="Enter new nickname"
+                    placeholder="새 별명을 입력하세요"
                   />
                 </div>
                 
@@ -204,20 +204,20 @@ export default function AccountPage() {
                     }}
                     className="flex-1 py-4 bg-background border-2 border-foreground text-text-secondary rounded-2xl font-black text-sm uppercase tracking-widest hover:text-foreground transition-all"
                   >
-                    Cancel
+                    취소
                   </button>
                   <button
                     onClick={handleUpdateNickname}
                     disabled={isUpdatingNickname || nickname === profile?.nickname}
                     className="flex-[2] py-4 bg-primary text-foreground border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none disabled:opacity-50 disabled:grayscale transition-all uppercase tracking-tight"
                   >
-                    {isUpdatingNickname ? 'Saving...' : 'Save Changes'}
+                    {isUpdatingNickname ? '저장 중...' : '저장하기'}
                   </button>
                 </div>
               </>
             ) : (
               <div className="bg-background p-6 rounded-2xl border-2 border-dashed border-foreground/20">
-                <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-2 opacity-40">Current Nickname</p>
+                <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-2 opacity-40">현재 별명</p>
                 <p className="text-2xl font-black tracking-tight">{profile?.nickname}</p>
               </div>
             )}
@@ -228,14 +228,14 @@ export default function AccountPage() {
         <section className="bg-surface p-8 rounded-[2rem] border-4 border-foreground shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none transition-all">
           <div className="flex items-center gap-3 mb-8">
             <Lock className={isPasswordVerified ? 'text-memorized' : 'text-secondary'} size={24} strokeWidth={3} />
-            <h2 className="text-2xl font-black uppercase tracking-tight">Security</h2>
+            <h2 className="text-2xl font-black uppercase tracking-tight">보안 설정</h2>
           </div>
 
           <div className="space-y-6">
             {!isPasswordVerified ? (
               <>
                 <div>
-                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">Confirm current password</p>
+                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">현재 비밀번호 확인</p>
                   <input
                     type="password"
                     value={currentPassword}
@@ -249,7 +249,7 @@ export default function AccountPage() {
                   disabled={isVerifyingPassword || !currentPassword}
                   className="w-full py-5 bg-secondary text-white border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 transition-all uppercase tracking-tight"
                 >
-                  {isVerifyingPassword ? 'Verifying...' : 'Verify Password'}
+                  {isVerifyingPassword ? '확인 중...' : '비밀번호 확인'}
                 </button>
               </>
             ) : (
@@ -257,12 +257,12 @@ export default function AccountPage() {
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="bg-memorized/10 p-5 rounded-2xl border-2 border-memorized flex items-center gap-4 mb-8">
                     <CheckCircle2 size={24} className="text-memorized shrink-0" strokeWidth={3} />
-                    <p className="text-sm font-black text-foreground tracking-tight">Password verified! Enter your new password below.</p>
+                    <p className="text-sm font-black text-foreground tracking-tight">비밀번호가 확인되었습니다. 새 비밀번호를 입력해주세요.</p>
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">New Password (8+ chars)</p>
+                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">새 비밀번호 (8자 이상)</p>
                       <input
                         type="password"
                         value={password}
@@ -274,7 +274,7 @@ export default function AccountPage() {
                     </div>
                     
                     <div>
-                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">Confirm New Password</p>
+                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">새 비밀번호 확인</p>
                       <input
                         type="password"
                         value={passwordConfirm}
@@ -289,7 +289,7 @@ export default function AccountPage() {
                       disabled={isUpdatingPassword || !password || password !== passwordConfirm}
                       className="w-full py-5 bg-memorized text-white border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 transition-all uppercase tracking-tight"
                     >
-                      {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                      {isUpdatingPassword ? '변경 중...' : '비밀번호 변경'}
                     </button>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function AccountPage() {
       <div className="mt-12 flex items-start gap-4 p-6 bg-primary/10 rounded-[2rem] border-4 border-foreground shadow-[6px_6px_0px_0px_#CEF67022]">
         <AlertCircle className="text-foreground shrink-0 mt-0.5" size={20} strokeWidth={3} />
         <p className="text-sm font-black text-foreground leading-snug tracking-tight">
-          SECURITY ALERT: Change your password periodically to keep your account safe. Changes apply immediately upon next login.
+          보안 알림: 계정 안전을 위해 주기적으로 비밀번호를 변경해 주세요. 변경사항은 다음 로그인부터 즉시 적용됩니다.
         </p>
       </div>
     </div>

@@ -197,12 +197,12 @@ export default function LoginPage() {
             {loading ? '처리 중...' : isLoginMode ? (
               <>
                 <LogIn size={24} strokeWidth={3} />
-                LOGIN
+                로그인
               </>
             ) : (
               <>
                 <UserPlus size={24} strokeWidth={3} />
-                SIGN UP
+                회원가입
               </>
             )}
           </button>
@@ -214,7 +214,7 @@ export default function LoginPage() {
             onClick={() => setIsLoginMode(!isLoginMode)}
             className="text-xs font-black text-text-secondary hover:text-secondary uppercase tracking-widest transition-colors"
           >
-            {isLoginMode ? 'Need an account? Sign up' : 'Already have an account? Login'}
+            {isLoginMode ? '계정이 없으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
           </button>
         </div>
       </div>
