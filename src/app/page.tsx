@@ -22,8 +22,8 @@ export default function RootPage() {
   }, [router, supabase])
 
   return (
-    <div className="flex flex-col h-[100dvh] items-center justify-center bg-gray-50 dark:bg-gray-950 font-sans">
-      <div className="w-12 h-12 border-4 border-gray-100 border-t-indigo-500 rounded-full animate-spin"></div>
+    <div className="flex flex-col h-[100dvh] items-center justify-center bg-background font-sans">
+      <div className="w-12 h-12 border-4 border-border-base border-t-primary rounded-full animate-spin"></div>
     </div>
   )
 }

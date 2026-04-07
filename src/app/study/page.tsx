@@ -134,13 +134,13 @@ export default function StudyPage() {
   const currentWord = deck[0]
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
-      <header className="px-6 py-2 flex justify-between items-center z-10 w-full shrink-0">
+    <div className="flex flex-col h-[100dvh] bg-background overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+      <header className="px-6 py-4 flex justify-between items-center z-10 w-full shrink-0">
         <button 
           onClick={() => router.push('/dashboard')}
-          className="p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          className="p-3 -ml-2 text-foreground bg-surface border-2 border-foreground rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={20} strokeWidth={3} />
         </button>
         <div className="flex items-center gap-3">
           {!loading && (
@@ -149,12 +149,12 @@ export default function StudyPage() {
                 onClick={() => setShowTooltip(!showTooltip)}
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95"
+                className="flex items-center gap-2 px-4 py-2 bg-surface border-2 border-foreground rounded-xl text-foreground shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none transition-all active:scale-95"
               >
-                <span className="text-xs font-bold">
-                  {learningMode === 'day' ? `${totalDayCount - memorizedCount} 단어 남음` : `${deck.length} 단어 남음`}
+                <span className="text-xs font-black uppercase tracking-tight">
+                  {learningMode === 'day' ? `${totalDayCount - memorizedCount} LEFT` : `${deck.length} LEFT`}
                 </span>
-                <HelpCircle size={14} className="text-gray-400" />
+                <HelpCircle size={14} strokeWidth={3} className="text-primary" />
               </button>
               
               {/* Tooltip */}
@@ -164,12 +164,12 @@ export default function StudyPage() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-10 right-0 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-xl shadow-xl z-50 pointer-events-none font-medium leading-relaxed"
+                    className="absolute top-12 right-0 w-48 p-4 bg-foreground text-background text-xs rounded-xl shadow-xl z-50 pointer-events-none font-black leading-tight border-2 border-foreground"
                   >
                     {learningMode === 'day' 
-                      ? `Day ${learningDay}에서 '완벽히 외움' 처리되지 않은 남은 단어 수입니다.` 
-                      : "현재 학습 세션에 포함된 남은 단어 수입니다."}
-                    <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-900 dark:bg-white rotate-45" />
+                      ? `Day ${learningDay}에서 미학습된 상태의 단어 수입니다.` 
+                      : "현재 학습 세션의 남은 단어 수입니다."}
+                    <div className="absolute -top-1.5 right-4 w-3 h-3 bg-foreground rotate-45" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -181,8 +181,8 @@ export default function StudyPage() {
       <main className="flex-1 relative flex flex-col items-center justify-center px-6 min-h-0">
         {loading ? (
           <div className="animate-pulse flex flex-col items-center mt-20">
-            <div className="w-12 h-12 border-4 border-gray-100 dark:border-gray-800 border-t-indigo-500 dark:border-t-indigo-500 rounded-full animate-spin mb-4" />
-            <p className="font-bold text-gray-400 dark:text-gray-500">데이터를 불러오는 중...</p>
+            <div className="w-16 h-16 border-4 border-border-base border-t-primary rounded-full animate-spin mb-6" />
+            <p className="font-black text-text-secondary uppercase tracking-widest text-sm opacity-50">Loading words...</p>
           </div>
         ) : deck.length > 0 ? (
           <AnimatePresence>
@@ -193,15 +193,15 @@ export default function StudyPage() {
             />
           </AnimatePresence>
         ) : (
-          <div className="text-center p-8 bg-white dark:bg-gray-900 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 max-w-sm w-full z-10 transition-colors">
-            <span className="text-6xl mb-6 block">🎉</span>
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">학습 완료!</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">모든 단어를 완벽하게 숙지했습니다.</p>
+          <div className="text-center p-10 bg-surface border-4 border-foreground rounded-[2.5rem] shadow-[12px_12px_0px_0px_#1E1E1E] dark:shadow-none max-w-sm w-full z-10 transition-all">
+            <span className="text-7xl mb-8 block grayscale-0">🎉</span>
+            <h2 className="text-3xl font-black text-foreground mb-3 leading-none uppercase tracking-tighter">Mission Clear!</h2>
+            <p className="text-text-secondary text-sm font-bold opacity-70 mb-8 px-4 leading-relaxed">준비된 모든 단어를 완벽하게 정복했습니다!</p>
             <button 
               onClick={() => router.push('/dashboard')}
-              className="mt-6 w-full py-4 bg-indigo-500 text-white rounded-xl font-bold hover:bg-indigo-600 active:scale-95 transition-all"
+              className="w-full py-5 bg-primary text-foreground border-4 border-foreground rounded-2xl font-black text-xl shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:scale-95 transition-all"
             >
-              대시보드로 돌아가기
+              GO TO HOME
             </button>
           </div>
         )}
