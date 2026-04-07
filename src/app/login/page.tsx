@@ -111,7 +111,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-bg-base transition-colors px-6 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       <div className="w-full max-w-sm bg-bg-surface p-10 rounded-xl border border-border-color shadow-sm transition-all">
         <div className="flex flex-col items-center mb-10">
-          <h1 className="text-4xl font-black text-accent-neon tracking-tighter mb-2 drop-shadow-sm">TTVOCA</h1>
+          <h1 className="text-4xl font-black text-accent-neon-text tracking-tighter mb-2 drop-shadow-sm">TTVOCA</h1>
           <p className="text-text-secondary font-black text-center text-[10px] uppercase tracking-[0.3em] opacity-60">
             Fast words, High scores
           </p>

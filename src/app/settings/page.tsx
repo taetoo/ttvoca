@@ -98,13 +98,13 @@ export default function SettingsPage() {
         <div className="mb-2 px-1">
           <p className="text-text-secondary font-black text-[10px] mb-1 uppercase tracking-widest opacity-60">Welcome back</p>
           <h2 className="text-3xl font-black text-text-primary leading-none">
-            안녕하세요, <span className="text-accent-neon tracking-tight">{profile?.nickname || '회원'}</span>님!
+            안녕하세요, <span className="text-accent-neon-text tracking-tight">{profile?.nickname || '회원'}</span>님!
           </h2>
         </div>
 
         <section>
           <div className="flex items-center gap-2 mb-6">
-            <Monitor className="text-accent-neon" size={20} strokeWidth={2.5} />
+            <Monitor className="text-accent-neon-text" size={20} strokeWidth={2.5} />
             <h2 className="text-lg font-black uppercase tracking-tight">화면 테마</h2>
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -176,7 +176,7 @@ export default function SettingsPage() {
 
         <section>
           <div className="flex items-center gap-2 mb-6">
-            <User className="text-accent-neon" size={20} strokeWidth={2.5} />
+            <User className="text-accent-neon-text" size={20} strokeWidth={2.5} />
             <h2 className="text-lg font-black uppercase tracking-tight">계정 및 데이터</h2>
           </div>
           

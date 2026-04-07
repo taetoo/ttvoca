@@ -1,9 +1,12 @@
-import rawWordsData from '@/data/words.json'
+import rawWordsData from '@/data/words_updated.json'
 
 export interface WordItem {
   id: number;
   word: string;
   meaning: string;
+  example?: string;
+  translation?: string;
+  pos?: string;
   grade?: string;
   day?: string;
 }
@@ -25,20 +28,19 @@ export function getFlatWords(): WordItem[] {
 
   const flatArray: WordItem[] = []
 
-  if (Array.isArray(rawWordsData)) {
-    cachedFlatArray = rawWordsData as WordItem[]
-    return cachedFlatArray
-  }
-
+  // words_updated.json 구조: { "600 grade": { "Day 1": { "word": { meaning, example, translation, pos } } } }
   for (const [grade, days] of Object.entries(rawWordsData)) {
-    for (const [day, wordObj] of Object.entries(days as Record<string, Record<string, string>>)) {
-      for (const [word, meaning] of Object.entries(wordObj)) {
+    for (const [day, words] of Object.entries(days as Record<string, Record<string, unknown>>)) {
+      for (const [word, details] of Object.entries(words as Record<string, { meaning: string; example?: string; translation?: string; pos?: string }>)) {
         flatArray.push({
           id: hashStringToNumber(`${grade}-${day}-${word}`),
-          word: word,
-          meaning: meaning,
+          word,
+          meaning: details.meaning,
+          example: details.example,
+          translation: details.translation,
+          pos: details.pos,
           grade,
-          day
+          day,
         })
       }
     }
@@ -46,4 +48,19 @@ export function getFlatWords(): WordItem[] {
 
   cachedFlatArray = flatArray;
   return flatArray
+}
+
+/**
+ * 특정 grade + day에 해당하는 단어 목록 반환
+ */
+export function getWordsByGradeAndDay(grade: string, day: string): WordItem[] {
+  return getFlatWords().filter(w => w.grade === grade && w.day === day)
+}
+
+/**
+ * 특정 grade + day + pos(품사)에 해당하는 단어 목록 반환
+ * 퀴즈 오답 선지 생성 시 활용
+ */
+export function getWordsByPos(grade: string, day: string, pos: string): WordItem[] {
+  return getFlatWords().filter(w => w.grade === grade && w.day === day && w.pos === pos)
 }

@@ -18,6 +18,7 @@
   
   /* Brand Accent */
   --color-accent-neon: var(--accent-neon);
+  --color-accent-neon-text: var(--accent-neon-text);
   --color-accent-terra: var(--accent-terra);
 
   /* Shared Properties */
@@ -31,6 +32,7 @@
 :root {
   /* Common Core Colors (can be overridden in dark mode if needed) */
   --accent-neon: #CEF670;
+  --accent-neon-text: #5C7A20;
   --accent-terra: #D97756;
 
   /* Light Mode */
@@ -47,6 +49,7 @@
 
 .dark {
   /* Dark Mode */
+  --accent-neon-text: #CEF670;
   --bg-base: #121212;
   --bg-surface: #1E1E1E;
   --text-primary: #F9FAFB;

@@ -11,7 +11,7 @@ import { User } from '@supabase/supabase-js'
 export default function DashboardPage() {
   const router = useRouter()
   const supabase = createClient()
-  const { targetScore, learningMode, learningDay, setLearningMode, setLearningDay } = useSettingStore()
+  const { targetScore, learningMode, learningDay, setLearningMode, setLearningDay, resetStudySession } = useSettingStore()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -33,6 +33,7 @@ export default function DashboardPage() {
       alert('설정(Settings) 탭에서 먼저 목표 점수를 선택해주세요!')
       return
     }
+    resetStudySession()
     router.push('/study')
   }
 

@@ -1,119 +1,86 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MousePointer2, Check, X, HelpCircle } from 'lucide-react';
+import { Volume2, ArrowLeftRight, Sparkles, Zap } from 'lucide-react';
 
 interface StudyTutorialProps {
   onComplete: () => void;
 }
 
 export default function StudyTutorial({ onComplete }: StudyTutorialProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  };
-
-  const handVariants = {
-    idle: { x: 0, y: 0 },
-    swipeRight: {
-      x: [0, 80, 0],
-      transition: { duration: 2, repeat: Infinity, repeatDelay: 1 }
-    },
-    swipeLeft: {
-      x: [0, -80, 0],
-      transition: { duration: 2, repeat: Infinity, repeatDelay: 1, delay: 0.5 }
-    },
-    swipeUp: {
-      y: [0, -80, 0],
-      transition: { duration: 2, repeat: Infinity, repeatDelay: 1, delay: 1 }
-    }
-  };
-
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="fixed inset-0 z-[100] bg-white/20 dark:bg-black/20 backdrop-blur-md flex items-center justify-center p-6 font-sans"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 z-[100] bg-bg-base/60 backdrop-blur-md flex items-center justify-center p-6 font-sans"
     >
-      <div className="w-full max-w-sm bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white/50 dark:border-white/10 relative overflow-hidden">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">학습 가이드</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">스와이프로 단어를 학습해보세요!</p>
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+        className="w-full max-w-sm bg-bg-surface border border-border-color rounded-xl p-8 shadow-sm"
+      >
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-black text-text-primary mb-2 tracking-tight">학습 가이드</h2>
+          <p className="text-text-secondary text-sm font-semibold">새로운 학습 방식을 알아보세요!</p>
         </div>
 
-        <div className="space-y-8 relative">
-          {/* Swipe Right Guide */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-green-600">
-              <Check size={24} strokeWidth={3} />
+        <div className="space-y-5">
+          {/* 스와이프 내비게이션 */}
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-btn-secondary-bg border border-border-color rounded-xl flex items-center justify-center shrink-0">
+              <ArrowLeftRight size={18} strokeWidth={2.5} className="text-text-secondary" />
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">우측으로 스와이프</p>
-              <p className="text-xs text-gray-500">완벽히 아는 단어 (인증 완료)</p>
-            </div>
-            <motion.div animate="swipeRight" variants={handVariants}>
-              <MousePointer2 className="text-gray-400 rotate-[20deg]" size={20} />
-            </motion.div>
-          </div>
-
-          {/* Swipe Left Guide */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center text-red-600">
-              <X size={24} strokeWidth={3} />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">좌측으로 스와이프</p>
-              <p className="text-xs text-gray-500">아직 모르는 단어 (심화 학습)</p>
-            </div>
-            <motion.div animate="swipeLeft" variants={handVariants}>
-              <MousePointer2 className="text-gray-400 rotate-[-20deg]" size={20} />
-            </motion.div>
-          </div>
-
-          {/* Swipe Up Guide */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-2xl flex items-center justify-center text-yellow-600">
-              <HelpCircle size={24} strokeWidth={3} />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">위쪽으로 스와이프</p>
-              <p className="text-xs text-gray-500">헷갈리는 단어 (표시 처리)</p>
-            </div>
-            <motion.div animate="swipeUp" variants={handVariants}>
-              <MousePointer2 className="text-gray-400" size={20} />
-            </motion.div>
-          </div>
-
-          {/* Tap Guide */}
-          <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600">
-              <span className="font-black text-xs">TAP</span>
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">카드 탭하기</p>
-              <p className="text-xs text-gray-500">단어의 뜻 확인하기</p>
+            <div>
+              <p className="font-black text-text-primary text-sm">좌우 스와이프</p>
+              <p className="text-xs text-text-secondary mt-0.5">이전/다음 카드로 이동합니다.</p>
             </div>
           </div>
 
-          {/* Counter Guide */}
-          <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-500">
-              <span className="font-black text-xs">COUNT</span>
+          {/* 하단 버튼 */}
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-accent-neon/10 border border-accent-neon/20 rounded-xl flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-black text-accent-neon-text">외움</span>
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-gray-900 dark:text-white">상단 숫자 안내</p>
-              <p className="text-xs text-gray-500">완벽히 외운 단어(오른쪽 스와이프)만 카운트에서 제외되며, 나머지는 반복 노출됩니다.</p>
+            <div>
+              <p className="font-black text-text-primary text-sm">하단 상태 버튼</p>
+              <p className="text-xs text-text-secondary mt-0.5">
+                <span className="text-accent-terra font-black">모름</span> · 
+                <span className="text-text-primary font-black"> 헷갈림</span> · 
+                <span className="text-accent-neon-text font-black"> 외움</span>을 눌러 상태를 저장하고 다음 카드로 넘어갑니다.
+              </p>
+            </div>
+          </div>
+
+          {/* TTS */}
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-btn-secondary-bg border border-border-color rounded-xl flex items-center justify-center shrink-0">
+              <Volume2 size={18} strokeWidth={2.5} className="text-text-secondary" />
+            </div>
+            <div>
+              <p className="font-black text-text-primary text-sm">자동 발음 재생</p>
+              <p className="text-xs text-text-secondary mt-0.5">카드가 바뀌면 영단어 발음이 자동 재생됩니다. 예문은 듣기 버튼을 눌러 확인하세요.</p>
+            </div>
+          </div>
+
+          {/* 학습 → 퀴즈 흐름 */}
+          <div className="flex items-start gap-4 pt-4 border-t border-border-color">
+            <div className="w-11 h-11 bg-accent-neon/10 border border-accent-neon/20 rounded-xl flex items-center justify-center shrink-0">
+              <Sparkles size={18} strokeWidth={2.5} className="text-accent-neon-text" />
+            </div>
+            <div>
+              <p className="font-black text-text-primary text-sm">학습 → 퀴즈 → 복습</p>
+              <p className="text-xs text-text-secondary mt-0.5">모든 단어를 학습하면 퀴즈를 풀고, 틀린 단어만 다시 복습할 수 있습니다.</p>
             </div>
           </div>
         </div>
 
         <button
           onClick={onComplete}
-          className="w-full mt-10 py-4 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+          className="w-full mt-8 py-4 bg-btn-primary-bg text-btn-primary-text rounded-xl font-black text-base active:scale-95 transition-all"
         >
           확인했습니다
         </button>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

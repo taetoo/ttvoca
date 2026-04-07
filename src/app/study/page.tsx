@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { getFlatWords, WordItem } from '@/utils/words'
@@ -8,37 +8,40 @@ import { useSettingStore } from '@/store/settingStore'
 import Flashcard from '@/components/Deck/Flashcard'
 import CardControls from '@/components/Deck/CardControls'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, HelpCircle } from 'lucide-react'
+import { ArrowLeft, Sparkles, Trophy } from 'lucide-react'
 import { User } from '@supabase/supabase-js'
 import StudyTutorial from '@/components/Deck/StudyTutorial'
-
-// Fisher-Yates Shuffle
-function shuffleArray<T>(array: T[]): T[] {
-  const arr = [...array]
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
 
 export default function StudyPage() {
   const router = useRouter()
   const supabase = createClient()
-  const { targetScore, learningMode, learningDay } = useSettingStore()
+  const { targetScore, learningMode, learningDay, studyRound, missedWords, resetStudySession } = useSettingStore()
   const [user, setUser] = useState<User | null>(null)
   
   const [deck, setDeck] = useState<WordItem[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [showTutorial, setShowTutorial] = useState(false)
-  const [totalDayCount, setTotalDayCount] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
   const [memorizedCount, setMemorizedCount] = useState(0)
-  const [showTooltip, setShowTooltip] = useState(false)
+  const [studyComplete, setStudyComplete] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
+  
+  // TTS 오디오 레퍼런스
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
+  // 튜토리얼 첫 방문 체크 (V2: 새 학습 흐름 반영)
   useEffect(() => {
-    const hasSeen = localStorage.getItem('hasSeenStudyTutorial')
+    const hasSeen = localStorage.getItem('hasSeenStudyTutorialV2')
     if (!hasSeen) {
       setShowTutorial(true)
+    }
+  }, [])
+
+  // TTS 정리 함수
+  const stopTTS = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
     }
   }, [])
 
@@ -51,170 +54,218 @@ export default function StudyPage() {
       }
       setUser(session.user)
 
-      // Fetch user specific word status
+      // 사용자별 단어 상태 조회
       const { data: statusData } = await supabase
         .from('user_word_status')
         .select('word_id, status')
         .eq('user_id', session.user.id)
 
-      const statusMap = new Map()
+      const statusMap = new Map<number, string>()
       statusData?.forEach((item) => {
         statusMap.set(item.word_id, item.status)
       })
 
       let allWords = getFlatWords()
 
-      // 공통: 목표점수에 의한 필터링 (600/900)
+      // 목표점수 필터
       if (targetScore) {
         allWords = allWords.filter((w) => w.grade?.includes(targetScore.toString()))
       }
 
       let studyList: WordItem[] = []
 
-      // 학습 모드별 데이터 필터링
       if (learningMode === 'day') {
-        // 날짜별 (선택된 Day의 단어 중 데이터에 기록되지 않은 미학습 단어만 노출)
-        studyList = allWords.filter(w => w.day === `Day ${learningDay}`)
-        
-        // 날짜별 학습일 때 전체 개수 산정
         const dayWords = allWords.filter(w => w.day === `Day ${learningDay}`)
-        setTotalDayCount(dayWords.length)
-        const memorizedInDay = dayWords.filter(w => statusMap.get(w.id) === 'memorized').length
-        setMemorizedCount(memorizedInDay)
-
-        studyList = studyList.filter(w => statusMap.get(w.id) !== 'memorized')
-      } 
-      else if (learningMode === 'random') {
-        // 랜덤: 모든 단어 중 기록되지 않은 미학습 단어만 섞은 후, 최대 50개(청크) 로드
-        let notMemorized = allWords.filter(w => !statusMap.has(w.id))
-        notMemorized = shuffleArray(notMemorized)
+        setTotalCount(dayWords.length)
+        const memorized = dayWords.filter(w => statusMap.get(w.id) === 'memorized').length
+        setMemorizedCount(memorized)
+        // 미학습 단어만
+        studyList = dayWords.filter(w => statusMap.get(w.id) !== 'memorized')
+      } else if (learningMode === 'random') {
+        const notMemorized = allWords.filter(w => !statusMap.has(w.id))
+        // Fisher-Yates Shuffle
+        for (let i = notMemorized.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [notMemorized[i], notMemorized[j]] = [notMemorized[j], notMemorized[i]]
+        }
         studyList = notMemorized.slice(0, 50)
-      } 
-      else if (learningMode === 'review') {
-        // 오답 복습: statusMap 기준으로 'unknown'이거나 'confused'인 단어로 로드
-        studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown' || statusMap.get(w.id) === 'confused')
+        setTotalCount(studyList.length)
+      } else if (learningMode === 'review') {
+        // missedWords가 있으면 그것을 사용하고, 없으면 DB에서 unknown/confused 단어 조회
+        if (missedWords.length > 0) {
+          studyList = missedWords
+        } else {
+          studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown' || statusMap.get(w.id) === 'confused')
+        }
+        setTotalCount(studyList.length)
       }
 
       setDeck(studyList)
+      setCurrentIndex(0)
       setLoading(false)
+
+      // 학습할 단어가 없으면 완료 상태로 설정
+      if (studyList.length === 0) {
+        setStudyComplete(true)
+      }
     }
 
     fetchUserAndData()
-  }, [targetScore, learningMode, learningDay, router, supabase])
+  }, [targetScore, learningMode, learningDay, missedWords, router, supabase])
 
-  const handleSwipe = async (direction: 'left' | 'right' | 'up', wordId: number) => {
-    let newStatus = 'unknown'
-    if (direction === 'right') newStatus = 'memorized'
-    if (direction === 'up') newStatus = 'confused'
-    if (direction === 'left') newStatus = 'unknown'
+  /** 스와이프 네비게이션 (상태 저장 없이 이동만) */
+  const handleSwipeNav = useCallback((direction: 'prev' | 'next') => {
+    stopTTS()
+    if (direction === 'next' && currentIndex < deck.length - 1) {
+      setCurrentIndex(prev => prev + 1)
+    } else if (direction === 'prev' && currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1)
+    }
+  }, [currentIndex, deck.length, stopTTS])
 
-    // Remove top card locally immediately
-    if (direction === 'right') {
-      setDeck(prev => prev.slice(1))
+  /** 하단 버튼으로 상태 저장 후 다음 카드로 이동 */
+  const handleStatusAction = async (status: 'unknown' | 'confused' | 'memorized') => {
+    const currentWord = deck[currentIndex]
+    if (!currentWord || !user) return
+
+    stopTTS()
+
+    // Supabase에 상태 저장
+    await supabase
+      .from('user_word_status')
+      .upsert({
+        user_id: user.id,
+        word_id: currentWord.id,
+        status,
+      }, { onConflict: 'user_id,word_id' })
+
+    // 외움 카운트 업데이트
+    if (status === 'memorized') {
       setMemorizedCount(prev => prev + 1)
-    } else {
-      // '모름' 또는 '헷갈림'인 경우 카드를 맨 뒤로 보냄
-      setDeck(prev => {
-        const [current, ...rest] = prev
-        return [...rest, current]
-      })
     }
 
-    if (user) {
-      await supabase
-        .from('user_word_status')
-        .upsert({ 
-          user_id: user.id, 
-          word_id: wordId, 
-          status: newStatus 
-        }, { onConflict: 'user_id,word_id' })
+    // 다음 카드 또는 완료
+    if (currentIndex < deck.length - 1) {
+      setCurrentIndex(prev => prev + 1)
+    } else {
+      // 모든 단어 학습 완료
+      setStudyComplete(true)
     }
   }
 
-  const currentWord = deck[0]
+  const currentWord = deck[currentIndex]
+  const progress = totalCount > 0 ? (memorizedCount / totalCount) * 100 : 0
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+    <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+      {/* 상단 헤더 */}
       <header className="px-6 py-4 flex justify-between items-center z-10 w-full shrink-0">
         <button 
-          onClick={() => router.push('/dashboard')}
-          className="p-3 -ml-2 text-foreground bg-surface border-2 border-foreground rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+          onClick={() => {
+            stopTTS()
+            router.push('/dashboard')
+          }}
+          className="p-3 -ml-2 text-text-primary bg-bg-surface border border-border-color rounded-xl shadow-sm active:scale-95 transition-all"
         >
-          <ArrowLeft size={20} strokeWidth={3} />
+          <ArrowLeft size={20} strokeWidth={2.5} />
         </button>
-        <div className="flex items-center gap-3">
-          {!loading && (
-            <div className="relative">
-              <button 
-                onClick={() => setShowTooltip(!showTooltip)}
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-                className="flex items-center gap-2 px-4 py-2 bg-surface border-2 border-foreground rounded-xl text-foreground shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none transition-all active:scale-95"
-              >
-                <span className="text-xs font-black uppercase tracking-tight">
-                  {learningMode === 'day' ? `${totalDayCount - memorizedCount} LEFT` : `${deck.length} LEFT`}
-                </span>
-                <HelpCircle size={14} strokeWidth={3} className="text-primary" />
-              </button>
-              
-              {/* Tooltip */}
-              <AnimatePresence>
-                {showTooltip && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-12 right-0 w-48 p-4 bg-foreground text-background text-xs rounded-xl shadow-xl z-50 pointer-events-none font-black leading-tight border-2 border-foreground"
-                  >
-                    {learningMode === 'day' 
-                      ? `Day ${learningDay}에서 미학습된 상태의 단어 수입니다.` 
-                      : "현재 학습 세션의 남은 단어 수입니다."}
-                    <div className="absolute -top-1.5 right-4 w-3 h-3 bg-foreground rotate-45" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+        <div className="flex items-center gap-2">
+          {!loading && !studyComplete && (
+            <span className="text-xs font-black text-text-secondary bg-btn-secondary-bg px-4 py-2 rounded-xl border border-border-color tracking-tight">
+              {currentIndex + 1} / {deck.length}
+            </span>
           )}
         </div>
       </header>
       
-      <main className="flex-1 relative flex flex-col items-center justify-center px-6 min-h-0">
+      {/* 프로그레스 바 */}
+      {!loading && !studyComplete && (
+        <div className="px-6 mb-4">
+          <div className="flex justify-between items-center mb-1.5">
+            <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest opacity-50">
+              Progress
+            </span>
+            <span className="text-[10px] font-black text-accent-neon-text tracking-wider">
+              {memorizedCount}/{totalCount} ({Math.round(progress)}%)
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-border-color/30 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-accent-neon rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 메인 컨텐츠 */}
+      <main className="flex-1 relative flex flex-col items-center justify-center px-6 min-h-0 overflow-y-auto">
         {loading ? (
           <div className="animate-pulse flex flex-col items-center mt-20">
-            <div className="w-16 h-16 border-4 border-border-base border-t-primary rounded-full animate-spin mb-6" />
+            <div className="w-16 h-16 border-4 border-border-color border-t-accent-neon rounded-full animate-spin mb-6" />
             <p className="font-black text-text-secondary uppercase tracking-widest text-sm opacity-50">Loading words...</p>
           </div>
-        ) : deck.length > 0 ? (
-          <AnimatePresence>
+        ) : studyComplete ? (
+          /* 학습 완료 화면 */
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center p-8 bg-bg-surface border border-border-color rounded-xl shadow-sm max-w-sm w-full"
+          >
+            <div className="w-16 h-16 bg-accent-neon/10 border border-accent-neon/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Trophy size={28} className="text-accent-neon-text" />
+            </div>
+            <h2 className="text-2xl font-black text-text-primary mb-2 tracking-tight">학습 완료!</h2>
+            <p className="text-sm font-semibold text-text-secondary mb-8 leading-relaxed">
+              모든 단어를 학습했습니다.<br />퀴즈로 실력을 확인해 보세요!
+            </p>
+            
+            <div className="space-y-3">
+              <button 
+                onClick={() => {
+                  router.push('/quiz')
+                }}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-accent-neon text-black rounded-xl font-black text-base active:scale-95 transition-all"
+              >
+                <Sparkles size={18} />
+                퀴즈 시작하기
+              </button>
+              <button 
+                onClick={() => {
+                  resetStudySession()
+                  router.push('/dashboard')
+                }}
+                className="w-full py-4 bg-btn-secondary-bg text-text-primary border border-border-color rounded-xl font-black text-base active:scale-95 transition-all"
+              >
+                홈으로 돌아가기
+              </button>
+            </div>
+          </motion.div>
+        ) : currentWord && !showTutorial ? (
+          <AnimatePresence mode="wait">
             <Flashcard 
-              key={currentWord.id} 
+              key={currentWord.id}
               word={currentWord} 
-              onSwipe={handleSwipe} 
+              round={studyRound}
+              onSwipeNav={handleSwipeNav}
+              audioRef={audioRef}
             />
           </AnimatePresence>
-        ) : (
-          <div className="text-center p-10 bg-surface border-4 border-foreground rounded-[2.5rem] shadow-[12px_12px_0px_0px_#1E1E1E] dark:shadow-none max-w-sm w-full z-10 transition-all">
-            <span className="text-7xl mb-8 block grayscale-0">🎉</span>
-            <h2 className="text-3xl font-black text-foreground mb-3 leading-none uppercase tracking-tighter">Mission Clear!</h2>
-            <p className="text-text-secondary text-sm font-bold opacity-70 mb-8 px-4 leading-relaxed">준비된 모든 단어를 완벽하게 정복했습니다!</p>
-            <button 
-              onClick={() => router.push('/dashboard')}
-              className="w-full py-5 bg-primary text-foreground border-4 border-foreground rounded-2xl font-black text-xl shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:scale-95 transition-all"
-            >
-              GO TO HOME
-            </button>
-          </div>
-        )}
+        ) : null}
       </main>
 
-      {/* Card Controls */}
-      {user && deck.length > 0 && <CardControls onAction={(dir) => handleSwipe(dir, currentWord.id)} />}
+      {/* 하단 컨트롤 */}
+      {user && !loading && !studyComplete && currentWord && (
+        <CardControls onAction={handleStatusAction} />
+      )}
 
-      {/* Onboarding Tutorial */}
+      {/* 학습 튜토리얼 */}
       {showTutorial && (
         <StudyTutorial 
           onComplete={() => {
-            localStorage.setItem('hasSeenStudyTutorial', 'true')
+            localStorage.setItem('hasSeenStudyTutorialV2', 'true')
             setShowTutorial(false)
           }} 
         />
