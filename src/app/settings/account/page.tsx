@@ -135,151 +135,151 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950 font-sans">
-        <div className="w-12 h-12 border-4 border-gray-100 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="flex flex-col min-h-screen items-center justify-center bg-background font-sans">
+        <div className="w-12 h-12 border-4 border-border-base border-t-primary rounded-full animate-spin"></div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 px-6 pt-12 pb-24 font-sans text-gray-900 dark:text-gray-100 transition-colors">
+    <div className="flex flex-col min-h-screen bg-background px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(4rem+env(safe-area-inset-bottom))] font-sans text-foreground transition-colors">
       {/* Back Button */}
       <button 
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold mb-8 hover:text-indigo-500 transition-colors w-fit"
+        className="flex items-center gap-2 text-text-secondary font-black mb-8 hover:text-foreground transition-all w-fit bg-surface border-2 border-foreground px-4 py-2 rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
       >
-        <ArrowLeft size={20} />
-        뒤로 가기
+        <ArrowLeft size={18} strokeWidth={3} />
+        BACK
       </button>
 
-      <h1 className="text-3xl font-extrabold mb-10">계정 관리</h1>
+      <h1 className="text-4xl font-black mb-12 tracking-tighter uppercase">Account Settings</h1>
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Email Display (Read-only) */}
-        <section className="bg-white dark:bg-gray-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-2 mb-4 text-gray-400">
-            <User size={18} />
-            <span className="text-xs font-bold tracking-widest uppercase">계정 이메일 (변경 불가)</span>
+        <section className="bg-surface p-8 rounded-[2rem] border-4 border-foreground shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none">
+          <div className="flex items-center gap-2 mb-4 text-text-secondary opacity-50">
+            <User size={18} strokeWidth={3} />
+            <span className="text-xs font-black tracking-widest uppercase">Email (Permanent)</span>
           </div>
-          <p className="text-lg font-bold px-1">{user?.email}</p>
+          <p className="text-2xl font-black px-1 tracking-tight">{user?.email}</p>
         </section>
 
         {/* Nickname Section */}
-        <section className="bg-white dark:bg-gray-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 transition-all">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="text-emerald-500" size={22} />
-              <h2 className="text-xl font-bold">별명 관리</h2>
+        <section className="bg-surface p-8 rounded-[2rem] border-4 border-foreground shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none transition-all">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="text-memorized" size={24} strokeWidth={3} />
+              <h2 className="text-2xl font-black uppercase tracking-tight">Nickname</h2>
             </div>
             {!isEditingNickname && (
               <button 
                 onClick={() => setIsEditingNickname(true)}
-                className="text-indigo-500 font-bold text-sm bg-indigo-50 dark:bg-indigo-900/30 px-4 py-2 rounded-xl hover:bg-indigo-100 transition-colors"
+                className="text-foreground font-black text-xs bg-primary border-2 border-foreground px-5 py-2.5 rounded-xl shadow-[3px_3px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
               >
-                변경
+                EDIT
               </button>
             )}
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {isEditingNickname ? (
               <>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 mb-2 ml-1">새 별명 (2~10자)</p>
+                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">New Nickname (2-10 chars)</p>
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value.slice(0, 10))}
                     maxLength={10}
-                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold text-lg"
-                    placeholder="새 별명을 입력하세요"
+                    className="w-full px-5 py-4 bg-white dark:bg-gray-800 border-4 border-foreground rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-black text-xl tracking-tight"
+                    placeholder="Enter new nickname"
                   />
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     onClick={() => {
                       setNickname(profile?.nickname || '')
                       setIsEditingNickname(false)
                     }}
-                    className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-2xl font-bold text-lg hover:bg-gray-200 transition-all"
+                    className="flex-1 py-4 bg-background border-2 border-foreground text-text-secondary rounded-2xl font-black text-sm uppercase tracking-widest hover:text-foreground transition-all"
                   >
-                    취소
+                    Cancel
                   </button>
                   <button
                     onClick={handleUpdateNickname}
                     disabled={isUpdatingNickname || nickname === profile?.nickname}
-                    className="flex-[2] py-4 bg-emerald-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-emerald-600 disabled:opacity-50 disabled:grayscale transition-all"
+                    className="flex-[2] py-4 bg-primary text-foreground border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none disabled:opacity-50 disabled:grayscale transition-all uppercase tracking-tight"
                   >
-                    {isUpdatingNickname ? '저장 중...' : '저장하기'}
+                    {isUpdatingNickname ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </>
             ) : (
-              <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-                <p className="text-xs font-bold text-gray-400 mb-1">현재 사용 중인 별명</p>
-                <p className="text-xl font-black">{profile?.nickname}</p>
+              <div className="bg-background p-6 rounded-2xl border-2 border-dashed border-foreground/20">
+                <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-2 opacity-40">Current Nickname</p>
+                <p className="text-2xl font-black tracking-tight">{profile?.nickname}</p>
               </div>
             )}
           </div>
         </section>
 
         {/* Password Section */}
-        <section className="bg-white dark:bg-gray-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 transition-all">
-          <div className="flex items-center gap-2 mb-6">
-            <Lock className={isPasswordVerified ? 'text-emerald-500' : 'text-indigo-500'} size={22} />
-            <h2 className="text-xl font-bold">비밀번호 변경</h2>
+        <section className="bg-surface p-8 rounded-[2rem] border-4 border-foreground shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none transition-all">
+          <div className="flex items-center gap-3 mb-8">
+            <Lock className={isPasswordVerified ? 'text-memorized' : 'text-secondary'} size={24} strokeWidth={3} />
+            <h2 className="text-2xl font-black uppercase tracking-tight">Security</h2>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {!isPasswordVerified ? (
               <>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 mb-2 ml-1">현재 비밀번호 확인</p>
+                  <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">Confirm current password</p>
                   <input
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
-                    placeholder="현재 비밀번호를 입력해주세요"
+                    className="w-full px-5 py-4 bg-white dark:bg-gray-800 border-4 border-foreground rounded-2xl focus:outline-none focus:ring-4 focus:ring-secondary/20 transition-all font-black text-xl"
+                    placeholder="••••••••"
                   />
                 </div>
                 <button
                   onClick={handleVerifyPassword}
                   disabled={isVerifyingPassword || !currentPassword}
-                  className="w-full py-4 bg-indigo-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-indigo-600 disabled:opacity-50 transition-all"
+                  className="w-full py-5 bg-secondary text-white border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 transition-all uppercase tracking-tight"
                 >
-                  {isVerifyingPassword ? '확인 중...' : '비밀번호 확인'}
+                  {isVerifyingPassword ? 'Verifying...' : 'Verify Password'}
                 </button>
               </>
             ) : (
               <>
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-3 mb-6">
-                    <CheckCircle2 size={20} className="text-emerald-500 shrink-0" />
-                    <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">비밀번호가 확인되었습니다. 새 비밀번호를 입력해 주세요.</p>
+                  <div className="bg-memorized/10 p-5 rounded-2xl border-2 border-memorized flex items-center gap-4 mb-8">
+                    <CheckCircle2 size={24} className="text-memorized shrink-0" strokeWidth={3} />
+                    <p className="text-sm font-black text-foreground tracking-tight">Password verified! Enter your new password below.</p>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2 ml-1">새 비밀번호 (8자 이상)</p>
+                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">New Password (8+ chars)</p>
                       <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold"
+                        className="w-full px-5 py-4 bg-white dark:bg-gray-800 border-4 border-foreground rounded-2xl focus:outline-none focus:ring-4 focus:ring-memorized/20 transition-all font-black text-xl"
                         placeholder="••••••••"
                         autoFocus
                       />
                     </div>
                     
                     <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2 ml-1">새 비밀번호 확인</p>
+                      <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3 ml-1 opacity-50">Confirm New Password</p>
                       <input
                         type="password"
                         value={passwordConfirm}
                         onChange={(e) => setPasswordConfirm(e.target.value)}
-                        className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold"
+                        className="w-full px-5 py-4 bg-white dark:bg-gray-800 border-4 border-foreground rounded-2xl focus:outline-none focus:ring-4 focus:ring-memorized/20 transition-all font-black text-xl"
                         placeholder="••••••••"
                       />
                     </div>
@@ -287,9 +287,9 @@ export default function AccountPage() {
                     <button
                       onClick={handleUpdatePassword}
                       disabled={isUpdatingPassword || !password || password !== passwordConfirm}
-                      className="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-lg shadow-lg hover:bg-emerald-600 disabled:opacity-50 transition-all"
+                      className="w-full py-5 bg-memorized text-white border-4 border-foreground rounded-2xl font-black text-lg shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 transition-all uppercase tracking-tight"
                     >
-                      {isUpdatingPassword ? '변경 중...' : '새 비밀번호로 업데이트'}
+                      {isUpdatingPassword ? 'Updating...' : 'Update Password'}
                     </button>
                   </div>
                 </div>
@@ -300,10 +300,10 @@ export default function AccountPage() {
       </div>
 
       {/* Security Info */}
-      <div className="mt-12 flex items-start gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30">
-        <AlertCircle className="text-indigo-500 shrink-0 mt-0.5" size={18} />
-        <p className="text-xs font-medium text-indigo-700 dark:text-indigo-300 leading-relaxed">
-          보안을 위해 주기적인 비밀번호 변경을 권장합니다. 비밀번호 변경 시 즉시 반영되며, 다음 로그인부터 새 비밀번호가 적용됩니다.
+      <div className="mt-12 flex items-start gap-4 p-6 bg-primary/10 rounded-[2rem] border-4 border-foreground shadow-[6px_6px_0px_0px_#CEF67022]">
+        <AlertCircle className="text-foreground shrink-0 mt-0.5" size={20} strokeWidth={3} />
+        <p className="text-sm font-black text-foreground leading-snug tracking-tight">
+          SECURITY ALERT: Change your password periodically to keep your account safe. Changes apply immediately upon next login.
         </p>
       </div>
     </div>

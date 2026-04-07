@@ -108,20 +108,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#C2FF26] dark:bg-gray-950 px-6 font-sans transition-colors">
-      <div className="w-full max-w-sm bg-white dark:bg-gray-900 px-8 py-10 rounded-[2rem] shadow-2xl border border-white/50 dark:border-gray-800 transition-colors">
-        <div className="flex flex-col items-center mb-10">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-primary transition-colors px-6 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="w-full max-w-sm bg-surface p-10 rounded-[2.5rem] border-4 border-foreground shadow-[16px_16px_0px_0px_#1E1E1E] dark:shadow-none transition-all">
+        <div className="flex flex-col items-center mb-12">
           <img 
             src="/logo.png" 
             alt="TTVOCA Logo" 
-            className="w-40 sm:w-48 h-auto object-contain mb-4 select-none drop-shadow-sm" 
+            className="w-48 h-auto object-contain mb-4 select-none drop-shadow-sm transition-transform hover:scale-105 active:scale-95" 
           />
-          <p className="text-[#DD7553] dark:text-[#DD7553] opacity-80 font-bold text-center text-[10px] sm:text-[11px] uppercase tracking-[0.25em] break-keep">
+          <p className="text-secondary font-black text-center text-[11px] uppercase tracking-[0.3em] opacity-90">
             Fast words, High scores
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {!isLoginMode && (
             <div>
               <input
@@ -129,10 +129,10 @@ export default function LoginPage() {
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
                 placeholder="관리자 초대 코드"
-                className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${inviteCodeError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+                className={`w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all text-foreground font-black text-lg ${inviteCodeError ? 'border-unknown focus:ring-unknown/20' : 'border-foreground focus:ring-primary/20'}`}
                 required
               />
-              {inviteCodeError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{inviteCodeError}</p>}
+              {inviteCodeError && <p className="text-unknown text-xs mt-2 ml-2 font-black uppercase tracking-tight">{inviteCodeError}</p>}
             </div>
           )}
 
@@ -142,10 +142,10 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일"
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${!isLoginMode && emailError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+              className={`w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all text-foreground font-black text-lg ${!isLoginMode && emailError ? 'border-unknown focus:ring-unknown/20' : 'border-foreground focus:ring-primary/20'}`}
               required
             />
-            {!isLoginMode && emailError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{emailError}</p>}
+            {!isLoginMode && emailError && <p className="text-unknown text-xs mt-2 ml-2 font-black uppercase tracking-tight">{emailError}</p>}
           </div>
 
           {!isLoginMode && (
@@ -155,11 +155,11 @@ export default function LoginPage() {
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value.slice(0, 10))}
                   placeholder="별명 (10자 이내)"
-                  className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${nicknameError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+                  className={`w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all text-foreground font-black text-lg ${nicknameError ? 'border-unknown focus:ring-unknown/20' : 'border-foreground focus:ring-primary/20'}`}
                   required
                   maxLength={10}
                 />
-              {nicknameError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{nicknameError}</p>}
+              {nicknameError && <p className="text-unknown text-xs mt-2 ml-2 font-black uppercase tracking-tight">{nicknameError}</p>}
             </div>
           )}
           
@@ -169,10 +169,10 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
-              className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${!isLoginMode && passwordError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+              className={`w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all text-foreground font-black text-lg ${!isLoginMode && passwordError ? 'border-unknown focus:ring-unknown/20' : 'border-foreground focus:ring-primary/20'}`}
               required
             />
-            {!isLoginMode && passwordError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold break-keep">{passwordError}</p>}
+            {!isLoginMode && passwordError && <p className="text-unknown text-xs mt-2 ml-2 font-black leading-snug break-keep uppercase tracking-tight">{passwordError}</p>}
           </div>
 
           {!isLoginMode && (
@@ -182,39 +182,39 @@ export default function LoginPage() {
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 placeholder="비밀번호 확인"
-                className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border rounded-xl focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-gray-100 font-medium ${passwordConfirmError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-[#DD7553]'}`}
+                className={`w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all text-foreground font-black text-lg ${passwordConfirmError ? 'border-unknown focus:ring-unknown/20' : 'border-foreground focus:ring-primary/20'}`}
                 required
               />
-              {passwordConfirmError && <p className="text-red-500 text-xs mt-1.5 ml-2 font-bold">{passwordConfirmError}</p>}
+              {passwordConfirmError && <p className="text-unknown text-xs mt-2 ml-2 font-black uppercase tracking-tight">{passwordConfirmError}</p>}
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading || (!isLoginMode && (!!emailError || !!passwordError || !!passwordConfirmError || !!inviteCodeError))}
-            className="w-full py-4 bg-[#DD7553] text-white rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#E54833] active:bg-[#CC3C28] transition-colors disabled:opacity-50 mt-4 shadow-md"
+            className="w-full py-5 bg-primary text-foreground border-4 border-foreground rounded-2xl font-black text-xl flex justify-center items-center gap-3 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[6px_6px_0px_0px_#1E1E1E] dark:shadow-none transition-all disabled:opacity-50 mt-8"
           >
             {loading ? '처리 중...' : isLoginMode ? (
               <>
-                <LogIn size={20} />
-                로그인
+                <LogIn size={24} strokeWidth={3} />
+                LOGIN
               </>
             ) : (
               <>
-                <UserPlus size={20} />
-                가입하기
+                <UserPlus size={24} strokeWidth={3} />
+                SIGN UP
               </>
             )}
           </button>
         </form>
 
-        <div className="mt-8 text-center border-t border-gray-100 dark:border-gray-800 pt-6 transition-colors">
+        <div className="mt-10 pt-8 border-t-4 border-foreground/10 text-center">
           <button
             type="button"
             onClick={() => setIsLoginMode(!isLoginMode)}
-            className="text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-[#DD7553] dark:hover:text-[#DD7553] transition-colors"
+            className="text-xs font-black text-text-secondary hover:text-secondary uppercase tracking-widest transition-colors"
           >
-            {isLoginMode ? '초대 코드가 있으신가요? 회원가입' : '이미 계정이 있으신가요? 로그인'}
+            {isLoginMode ? 'Need an account? Sign up' : 'Already have an account? Login'}
           </button>
         </div>
       </div>
