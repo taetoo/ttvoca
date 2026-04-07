@@ -7,25 +7,25 @@ interface NavProps {
 
 export default function BottomNavBar({ currentTab }: NavProps) {
   return (
-    <nav className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-8 pt-3 px-6 flex justify-between items-center shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-50 transition-colors">
-      <Link href="/dashboard" className={`flex flex-col items-center p-2 rounded-xl transition-colors w-16 ${currentTab === 'home' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-        <Home size={24} strokeWidth={currentTab === 'home' ? 3 : 2} className={currentTab === 'home' ? '-mt-1' : ''} />
-        <span className="text-[10px] font-bold mt-1">학습</span>
+    <nav className="bg-surface border-t-2 border-foreground pb-8 pt-3 px-6 flex justify-between items-center z-50 transition-colors shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+      <Link href="/dashboard" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'home' ? 'text-primary' : 'text-text-secondary hover:text-foreground'}`}>
+        <Home size={24} strokeWidth={currentTab === 'home' ? 3 : 2} className={currentTab === 'home' ? 'drop-shadow-[0_0_8px_rgba(206,246,112,0.5)]' : ''} />
+        <span className="text-[10px] font-black mt-1">학습</span>
       </Link>
       
-      <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-colors w-16 ${currentTab === 'unknown' ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/30'}`}>
-        <XCircle size={24} strokeWidth={currentTab === 'unknown' ? 3 : 2} className={currentTab === 'unknown' ? '-mt-1' : ''} />
-        <span className="text-[10px] font-bold mt-1">못 외움</span>
+      <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'unknown' ? 'text-unknown' : 'text-text-secondary hover:text-unknown'}`}>
+        <XCircle size={24} strokeWidth={currentTab === 'unknown' ? 3 : 2} />
+        <span className="text-[10px] font-black mt-1">못 외움</span>
       </Link>
-
-      <Link href="/vocabs/confused" className={`flex flex-col items-center p-2 rounded-xl transition-colors w-16 ${currentTab === 'confused' ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/30'}`}>
-        <AlertCircle size={24} strokeWidth={currentTab === 'confused' ? 3 : 2} className={currentTab === 'confused' ? '-mt-1' : ''} />
-        <span className="text-[10px] font-bold mt-1">헷갈림</span>
+ 
+      <Link href="/vocabs/confused" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'confused' ? 'text-confused' : 'text-text-secondary hover:text-confused'}`}>
+        <AlertCircle size={24} strokeWidth={currentTab === 'confused' ? 3 : 2} />
+        <span className="text-[10px] font-black mt-1">헷갈림</span>
       </Link>
-
-      <Link href="/vocabs/memorized" className={`flex flex-col items-center p-2 rounded-xl transition-colors w-16 ${currentTab === 'memorized' ? 'text-green-500' : 'text-gray-400 dark:text-gray-500 hover:bg-green-50 dark:hover:bg-green-900/30'}`}>
-        <CheckCircle2 size={24} strokeWidth={currentTab === 'memorized' ? 3 : 2} className={currentTab === 'memorized' ? '-mt-1' : ''} />
-        <span className="text-[10px] font-bold mt-1">외움</span>
+ 
+      <Link href="/vocabs/memorized" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'memorized' ? 'text-memorized' : 'text-text-secondary hover:text-memorized'}`}>
+        <CheckCircle2 size={24} strokeWidth={currentTab === 'memorized' ? 3 : 2} />
+        <span className="text-[10px] font-black mt-1">외움</span>
       </Link>
     </nav>
   )

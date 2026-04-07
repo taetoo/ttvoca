@@ -83,134 +83,135 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950 font-sans">
-        <div className="w-12 h-12 border-4 border-gray-100 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="flex flex-col min-h-screen items-center justify-center bg-background font-sans">
+        <div className="w-12 h-12 border-4 border-border-base border-t-primary rounded-full animate-spin"></div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(8rem+env(safe-area-inset-bottom))] font-sans text-gray-900 dark:text-gray-100 transition-colors">
-      <h1 className="text-3xl font-extrabold mb-8">학습 설정</h1>
+    <div className="flex flex-col min-h-screen bg-background px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(8rem+env(safe-area-inset-bottom))] font-sans text-foreground transition-colors">
+      <h1 className="text-4xl font-black mb-10 tracking-tighter">설정</h1>
 
-      <div className="space-y-10">
+      <div className="space-y-12">
         {/* Simplified Welcome Section */}
-        <div className="mb-6 px-1">
-          <p className="text-gray-500 dark:text-gray-400 font-bold text-sm mb-1">오늘도 화이팅!</p>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100">
-            안녕하세요, <span className="text-indigo-500">{profile?.nickname || '회원'}</span>님!
+        <div className="mb-2 px-1">
+          <p className="text-secondary font-black text-xs mb-1 uppercase tracking-widest">Welcome back</p>
+          <h2 className="text-3xl font-black text-foreground leading-none">
+            안녕하세요, <span className="text-primary bg-[#1E1E1E] px-2 py-0.5 rounded ml-1">{profile?.nickname || '회원'}</span>님!
           </h2>
         </div>
+
         <section>
-          <div className="flex items-center gap-2 mb-4">
-            <Monitor className="text-indigo-500" />
-            <h2 className="text-xl font-bold">화면 테마</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <Monitor className="text-primary" strokeWidth={3} />
+            <h2 className="text-xl font-black uppercase tracking-tight">화면 테마</h2>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             <button
               onClick={() => setTheme('light')}
-              className={`py-3 rounded-2xl font-bold text-sm border-2 transition-all flex flex-col items-center gap-1 ${
+              className={`py-4 rounded-xl font-black text-xs border-2 transition-all flex flex-col items-center gap-2 ${
                 theme === 'light'
-                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
-                  : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-foreground bg-primary text-[#1E1E1E] shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none'
+                  : 'border-border-base bg-surface text-text-secondary opacity-60'
               }`}
             >
-              <Sun size={20} />
+              <Sun size={20} strokeWidth={3} />
               라이트
             </button>
             <button
               onClick={() => setTheme('dark')}
-              className={`py-3 rounded-2xl font-bold text-sm border-2 transition-all flex flex-col items-center gap-1 ${
+              className={`py-4 rounded-xl font-black text-xs border-2 transition-all flex flex-col items-center gap-2 ${
                 theme === 'dark'
-                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
-                  : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-foreground bg-primary text-[#1E1E1E] shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none'
+                  : 'border-border-base bg-surface text-text-secondary opacity-60'
               }`}
             >
-              <Moon size={20} />
+              <Moon size={20} strokeWidth={3} />
               다크
             </button>
             <button
               onClick={() => setTheme('system')}
-              className={`py-3 rounded-2xl font-bold text-sm border-2 transition-all flex flex-col items-center gap-1 ${
+              className={`py-4 rounded-xl font-black text-xs border-2 transition-all flex flex-col items-center gap-2 ${
                 theme === 'system'
-                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
-                  : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-foreground bg-primary text-[#1E1E1E] shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none'
+                  : 'border-border-base bg-surface text-text-secondary opacity-60'
               }`}
             >
-              <Monitor size={20} />
+              <Monitor size={20} strokeWidth={3} />
               시스템
             </button>
           </div>
         </section>
 
         <section>
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="text-red-500" />
-            <h2 className="text-xl font-bold">목표 점수</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <Target className="text-secondary" strokeWidth={3} />
+            <h2 className="text-xl font-black uppercase tracking-tight">목표 점수</h2>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setTargetScore(600)}
-              className={`py-5 rounded-2xl font-bold text-lg border-2 transition-all ${
+              className={`py-6 rounded-xl font-black text-xl border-2 transition-all shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none ${
                 targetScore === 600
-                  ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                  : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-foreground bg-secondary text-white'
+                  : 'border-border-base bg-surface text-text-secondary opacity-40 shadow-none'
               }`}
             >
-              600점 이상
+              600+
             </button>
             <button
               onClick={() => setTargetScore(900)}
-              className={`py-5 rounded-2xl font-bold text-lg border-2 transition-all ${
+              className={`py-6 rounded-xl font-black text-xl border-2 transition-all shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none ${
                 targetScore === 900
-                  ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                  : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'border-foreground bg-secondary text-white'
+                  : 'border-border-base bg-surface text-text-secondary opacity-40 shadow-none'
               }`}
             >
-              900점 이상
+              900+
             </button>
           </div>
         </section>
 
 
         <section>
-          <div className="flex items-center gap-2 mb-4">
-            <User className="text-emerald-500" />
-            <h2 className="text-xl font-bold">계정 및 데이터 관리</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <User className="text-primary" strokeWidth={3} />
+            <h2 className="text-xl font-black uppercase tracking-tight">계정 및 데이터</h2>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <button
               onClick={() => router.push('/settings/account')}
-              className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-indigo-200 dark:border-indigo-900/30 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl font-black text-lg border-2 border-foreground bg-surface text-foreground shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center gap-3"
             >
-              <Shield size={20} />
-              계정 관리 (별명/비밀번호)
+              <Shield size={20} strokeWidth={3} />
+              프로필 관리
             </button>
             <button
               onClick={handleResetData}
               disabled={isResetting}
-              className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-4 rounded-xl font-black text-lg border-2 border-foreground bg-surface text-unknown shadow-[4px_4px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
-              <RotateCcw size={20} className={isResetting ? 'animate-spin' : ''} />
-              {isResetting ? '초기화 중...' : '모든 학습 기록 초기화'}
+              <RotateCcw size={20} strokeWidth={3} className={isResetting ? 'animate-spin' : ''} />
+              {isResetting ? '초기화 중...' : '학습 데이터 초기화'}
             </button>
             
             <button
               onClick={handleLogout}
-              className="w-full py-4 rounded-2xl font-bold text-lg border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl font-black text-lg border-2 border-border-base bg-background text-text-secondary hover:text-foreground transition-all flex items-center justify-center gap-3"
             >
-              <LogOut size={20} />
+              <LogOut size={20} strokeWidth={3} />
               로그아웃
             </button>
           </div>
         </section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 px-6 pt-12 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent pointer-events-none">
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-12 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-background to-transparent pointer-events-none">
         <button
           onClick={handleStart}
-          className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl font-bold text-lg shadow-lg hover:bg-gray-800 dark:hover:bg-white active:scale-95 transition-all pointer-events-auto"
+          className="w-full py-5 bg-primary text-[#1E1E1E] rounded-2xl border-4 border-foreground font-black text-xl shadow-[6px_6px_0px_0px_#1E1E1E] dark:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:scale-95 transition-all pointer-events-auto"
         >
           학습 시작하기
         </button>

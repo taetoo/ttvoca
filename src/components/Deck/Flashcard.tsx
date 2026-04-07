@@ -57,7 +57,7 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
     >
       <motion.div
         onClick={() => setFlipped(!flipped)}
-        className="w-full h-full relative shadow-2xl rounded-[2rem] ring-1 ring-gray-100 dark:ring-gray-800 transition-colors"
+        className="w-full h-full relative rounded-[2rem] transition-colors"
         initial={false}
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.5, type: 'spring', stiffness: 260, damping: 20 }}
@@ -65,61 +65,58 @@ export default function Flashcard({ word, onSwipe }: FlashcardProps) {
       >
         {/* Front (English) */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-[2rem] backface-hidden transition-colors"
+          className="absolute inset-0 flex flex-col items-center justify-center bg-surface border-4 border-foreground rounded-[2rem] backface-hidden transition-colors shadow-[8px_8px_0px_0px_#1E1E1E] dark:shadow-none"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <span className="absolute top-6 left-6 text-xs font-bold text-gray-300 dark:text-gray-500 tracking-widest uppercase">Word</span>
+          <span className="absolute top-8 left-8 text-xs font-black text-foreground tracking-widest uppercase opacity-30">Word</span>
           {word.day && (
-            <span className="absolute top-6 right-8 text-xs font-black text-white bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full tracking-wider shadow-sm transition-colors">
+            <span className="absolute top-8 right-8 text-xs font-black text-foreground bg-primary px-4 py-1.5 rounded-lg border-2 border-foreground tracking-wider shadow-[3px_3px_0px_0px_#1E1E1E] transition-colors">
               {word.day}
             </span>
           )}
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-gray-100 text-center tracking-tight break-words px-4 leading-tight">
+          <h2 className="text-5xl sm:text-6xl font-black text-foreground text-center tracking-tighter break-words px-4 leading-none">
             {word.word}
           </h2>
           
-          <div className="flex gap-3 mt-4">
+          <div className="flex gap-4 mt-8">
             <button
               onClick={(e) => playWord(e, word.word, 'en-US')}
-              className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-xs font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:opacity-90 border-2 border-foreground rounded-xl text-xs font-black transition-all shadow-[3px_3px_0px_0px_#1E1E1E] text-foreground"
               aria-label="미국식 발음 듣기"
             >
-              🇺🇸 US 🔊
+              🇺🇸 US
             </button>
             <button
               onClick={(e) => playWord(e, word.word, 'en-GB')}
-              className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-xs font-semibold transition-colors shadow-sm text-gray-800 dark:text-gray-200"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-secondary hover:opacity-90 border-2 border-foreground rounded-xl text-xs font-black transition-all shadow-[3px_3px_0px_0px_#1E1E1E] text-white"
               aria-label="영국식 발음 듣기"
             >
-              🇬🇧 UK 🔊
+              🇬🇧 UK
             </button>
           </div>
-          <div className="absolute bottom-8 flex flex-col items-center gap-1 text-gray-400 dark:text-gray-400">
-            <span className="text-xl">👇</span>
-            <span className="text-xs font-medium">탭해서 뒷면 보기</span>
+          <div className="absolute bottom-10 flex flex-col items-center gap-1 text-foreground opacity-20">
+            <span className="text-xs font-black uppercase tracking-widest">Tap to flip</span>
           </div>
         </div>
 
         {/* Back (Korean) */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 dark:bg-gray-700 text-white rounded-[2rem] backface-hidden transition-colors"
+          className="absolute inset-0 flex flex-col items-center justify-center bg-foreground text-surface rounded-[2rem] border-4 border-foreground backface-hidden transition-colors"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
-          <span className="absolute top-6 left-6 text-xs font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">Meaning</span>
-          {word.day && (
-            <span className="absolute top-6 right-8 text-xs font-black text-gray-400 bg-gray-800 dark:bg-gray-600 px-3 py-1 rounded-full tracking-wider shadow-sm transition-colors">
-              {word.day}
-            </span>
-          )}
-          <h2 className="text-3xl sm:text-4xl font-bold text-center px-6 leading-relaxed break-keep">
+          <span className="absolute top-8 left-8 text-xs font-black text-surface tracking-widest uppercase opacity-30">Meaning</span>
+          <h2 className="text-4xl sm:text-5xl font-black text-center px-10 leading-tight break-keep tracking-tight">
             {word.meaning}
           </h2>
+          <div className="absolute bottom-10 flex flex-col items-center gap-1 text-surface opacity-20">
+            <span className="text-xs font-black uppercase tracking-widest">Swipe to mark</span>
+          </div>
         </div>
 
         {/* Color Indicators for swiping */}
-        <motion.div className="absolute inset-0 bg-red-500 pointer-events-none rounded-[2rem]" style={{ opacity: bgWarning, transform: 'translateZ(1px)' }} />
-        <motion.div className="absolute inset-0 bg-green-500 pointer-events-none rounded-[2rem]" style={{ opacity: bgSuccess, transform: 'translateZ(1px)' }} />
-        <motion.div className="absolute inset-0 bg-yellow-500 pointer-events-none rounded-[2rem]" style={{ opacity: bgConfused, transform: 'translateZ(1px)' }} />
+        <motion.div className="absolute inset-0 bg-unknown pointer-events-none rounded-[2rem] border-4 border-foreground" style={{ opacity: bgWarning, transform: 'translateZ(1px)' }} />
+        <motion.div className="absolute inset-0 bg-memorized pointer-events-none rounded-[2rem] border-4 border-foreground" style={{ opacity: bgSuccess, transform: 'translateZ(1px)' }} />
+        <motion.div className="absolute inset-0 bg-confused pointer-events-none rounded-[2rem] border-4 border-foreground" style={{ opacity: bgConfused, transform: 'translateZ(1px)' }} />
       </motion.div>
     </motion.div>
   )

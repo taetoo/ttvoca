@@ -31,14 +31,14 @@ function VocabCard({ word }: { word: WordItem }) {
     <motion.div 
       layout
       onClick={() => setIsRevealed(!isRevealed)}
-      className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
+      className="bg-surface p-5 rounded-xl border border-border-base flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] dark:shadow-none"
     >
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-0">{word.word}</h3>
+            <h3 className="text-xl font-black text-foreground mt-0 tracking-tight">{word.word}</h3>
             {word.day && (
-              <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 uppercase tracking-tighter">
+              <span className="text-[10px] font-black px-2 py-0.5 bg-background text-text-secondary rounded border border-border-base uppercase tracking-wider">
                 {word.day}
               </span>
             )}
@@ -47,19 +47,19 @@ function VocabCard({ word }: { word: WordItem }) {
           <div className="flex gap-2">
             <button
               onClick={(e) => playWord(e, word.word, 'en-US')}
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-700 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary hover:opacity-90 rounded-lg border-2 border-foreground transition-all shadow-[2px_2px_0px_0px_#1E1E1E]"
               aria-label="미국식 발음 듣기"
             >
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">🇺🇸 US</span>
-              <Volume2 className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+              <span className="text-[10px] font-black text-[#1E1E1E]">🇺🇸 US</span>
+              <Volume2 className="w-3.5 h-3.5 text-[#1E1E1E]" />
             </button>
             <button
               onClick={(e) => playWord(e, word.word, 'en-GB')}
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-700 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-secondary hover:opacity-90 rounded-lg border-2 border-foreground transition-all shadow-[2px_2px_0px_0px_#1E1E1E]"
               aria-label="영국식 발음 듣기"
             >
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">🇬🇧 UK</span>
-              <Volume2 className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+              <span className="text-[10px] font-black text-white">🇬🇧 UK</span>
+              <Volume2 className="w-3.5 h-3.5 text-white" />
             </button>
           </div>
         </div>
@@ -70,7 +70,7 @@ function VocabCard({ word }: { word: WordItem }) {
               initial={{ opacity: 0, y: -5 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0 }}
-              className="text-sm font-bold text-gray-600 dark:text-gray-300 mt-1"
+              className="text-base font-bold text-text-secondary mt-2"
             >
               {word.meaning}
             </motion.p>
@@ -80,7 +80,7 @@ function VocabCard({ word }: { word: WordItem }) {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
-              className="text-sm font-bold text-gray-300 dark:text-gray-600 mt-1"
+              className="text-sm font-bold text-text-secondary opacity-30 mt-2"
             >
               터치해서 뜻 확인
             </motion.p>
@@ -108,9 +108,9 @@ export default function VocabListPage() {
   }
   
   const colorMap: Record<string, string> = {
-    unknown: 'text-red-500',
-    confused: 'text-yellow-500',
-    memorized: 'text-green-500'
+    unknown: 'text-unknown',
+    confused: 'text-confused',
+    memorized: 'text-memorized'
   }
 
   useEffect(() => {
@@ -149,21 +149,21 @@ export default function VocabListPage() {
   }, [status, router, targetScore, supabase])
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950 font-sans transition-colors">
-      <header className={`px-6 py-6 pb-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-10 sticky top-0 flex justify-between items-end shadow-sm transition-colors`}>
+    <div className="flex flex-col h-[100dvh] bg-background text-foreground font-sans transition-colors">
+      <header className="px-6 py-8 pb-6 bg-surface border-b border-border-base z-10 sticky top-0 flex justify-between items-end shadow-sm transition-colors">
         <div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${colorMap[status] || 'text-gray-900 dark:text-gray-100'}`}>
+          <h1 className={`text-3xl font-black tracking-tight ${colorMap[status] || 'text-foreground'}`}>
             {titleMap[status] || '단어장'}
           </h1>
-          {!loading && <p className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1">총 {list.length}개의 단어</p>}
+          {!loading && <p className="text-sm font-bold text-text-secondary mt-1 opacity-70">총 {list.length}개의 단어</p>}
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-6 py-4 space-y-3 pb-24">
+      <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 pb-32">
         {loading ? (
-          <div className="animate-pulse space-y-3">
+          <div className="animate-pulse space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-[88px] bg-gray-200 dark:bg-gray-800 rounded-2xl w-full"></div>
+              <div key={i} className="h-[100px] bg-surface rounded-xl w-full border border-border-base"></div>
             ))}
           </div>
         ) : list.length > 0 ? (
@@ -171,8 +171,8 @@ export default function VocabListPage() {
             <VocabCard key={word.id} word={word} />
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 font-bold mt-20">
-            <span className="text-4xl mb-4 opacity-50">🍃</span>
+          <div className="flex flex-col items-center justify-center h-full text-text-secondary font-bold mt-20 opacity-40">
+            <span className="text-5xl mb-4">🍃</span>
             <p>해당하는 단어가 없습니다.</p>
           </div>
         )}
