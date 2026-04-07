@@ -10,31 +10,31 @@ export default function CardControls({ onAction }: CardControlsProps) {
       <div className="flex flex-col items-center gap-2">
         <button 
           onClick={() => onAction('left')}
-          className="w-16 h-16 bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/50 text-red-500 rounded-full flex items-center justify-center shadow-lg active:scale-90 active:bg-red-50 dark:active:bg-red-900/20 transition-all hover:border-red-200 dark:hover:border-red-800"
+          className="w-16 h-16 bg-bg-surface border border-accent-terra/30 text-accent-terra rounded-full flex items-center justify-center shadow-sm active:scale-95 transition-all hover:bg-accent-terra/5"
         >
-          <X size={32} strokeWidth={3} />
+          <X size={32} strokeWidth={2.5} />
         </button>
-        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">못 외움</span>
+        <span className="text-[10px] font-black text-text-secondary uppercase tracking-tighter">Skip</span>
       </div>
 
       <div className="flex flex-col items-center gap-2 -mt-4">
         <button 
           onClick={() => onAction('up')}
-          className="w-14 h-14 bg-white dark:bg-gray-800 border-2 border-yellow-100 dark:border-yellow-900/50 text-yellow-500 rounded-full flex items-center justify-center shadow-lg active:scale-90 active:bg-yellow-50 dark:active:bg-yellow-900/20 transition-all hover:border-yellow-200 dark:hover:border-yellow-800"
+          className="w-14 h-14 bg-bg-surface border border-accent-neon text-text-primary rounded-full flex items-center justify-center shadow-sm active:scale-95 transition-all hover:bg-accent-neon/10"
         >
-          <ArrowUp size={24} strokeWidth={3} />
+          <ArrowUp size={24} strokeWidth={2.5} />
         </button>
-        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">헷갈림</span>
+        <span className="text-[10px] font-black text-text-secondary uppercase tracking-tighter">Vague</span>
       </div>
 
       <div className="flex flex-col items-center gap-2">
         <button 
           onClick={() => onAction('right')}
-          className="w-16 h-16 bg-white dark:bg-gray-800 border-2 border-green-100 dark:border-green-900/50 text-green-500 rounded-full flex items-center justify-center shadow-lg active:scale-90 active:bg-green-50 dark:active:bg-green-900/20 transition-all hover:border-green-200 dark:hover:border-green-800"
+          className="w-16 h-16 bg-accent-neon border border-accent-neon text-black rounded-full flex items-center justify-center shadow-sm active:scale-95 transition-all hover:brightness-105"
         >
-          <Check size={32} strokeWidth={3} />
+          <Check size={32} strokeWidth={2.5} />
         </button>
-        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">외움</span>
+        <span className="text-[10px] font-black text-text-secondary uppercase tracking-tighter">Learned</span>
       </div>
     </div>
   )

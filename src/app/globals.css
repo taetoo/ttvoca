@@ -1,72 +1,73 @@
 @import "tailwindcss";
 
+@theme {
+  /* Minimal Focus Color System */
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  
+  --color-border-color: var(--border-color);
+  
+  /* Buttons */
+  --color-btn-primary-bg: var(--btn-primary-bg);
+  --color-btn-primary-text: var(--btn-primary-text);
+  --color-btn-secondary-bg: var(--btn-secondary-bg);
+  --color-btn-secondary-text: var(--btn-secondary-text);
+  
+  /* Brand Accent */
+  --color-accent-neon: var(--accent-neon);
+  --color-accent-terra: var(--accent-terra);
+
+  /* Shared Properties */
+  --radius-xl: 12px;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
+
 :root {
-  /* Common Core Colors */
-  --primary: #CEF670;
-  --secondary: #D97756;
-  
+  /* Common Core Colors (can be overridden in dark mode if needed) */
+  --accent-neon: #CEF670;
+  --accent-terra: #D97756;
+
   /* Light Mode */
-  --background: #F9F8F6;
-  --foreground: #1E1E1E;
-  --surface: #FFFFFF;
-  --text-secondary: #5C5C5C;
-  --border-base: #E2E0D9;
-  
-  /* Status Colors (Modern Pop vibe) */
-  --color-unknown: #FF5A5A;      /* 🔴 못 외운 단어 */
-  --color-confused: #FFD166;     /* 🟡 헷갈리는 단어 */
-  --color-memorized: #06D6A0;    /* 🟢 외운 단어 */
+  --bg-base: #F9F8F6;
+  --bg-surface: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --border-color: #E5E7EB;
+  --btn-primary-bg: #1F2937;
+  --btn-primary-text: #FFFFFF;
+  --btn-secondary-bg: #F3F4F6;
+  --btn-secondary-text: #374151;
 }
 
 .dark {
   /* Dark Mode */
-  --background: #1A1A1A;
-  --foreground: #F9F8F6;
-  --surface: #2C2C2C;
-  --text-secondary: #A3A3A3;
-  --border-base: #3D3D3D;
-  
-  /* Status Colors in Dark Mode (Optional: slightly adjusted for contrast) */
-  --color-unknown: #FF6B6B;
-  --color-confused: #FFD93D;
-  --color-memorized: #4ADE80;
+  --bg-base: #121212;
+  --bg-surface: #1E1E1E;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --border-color: #374151;
+  --btn-primary-bg: #F9FAFB;
+  --btn-primary-text: #111827;
+  --btn-secondary-bg: #2D3748;
+  --btn-secondary-text: #E5E7EB;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-text-secondary: var(--text-secondary);
-  --color-border-base: var(--border-base);
-  
-  --color-unknown: var(--color-unknown);
-  --color-confused: var(--color-confused);
-  --color-memorized: var(--color-memorized);
-  
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono);
-  
-  --radius-xl: 12px;
-  --radius-lg: 8px;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, sans-serif;
-  overscroll-behavior-y: none;
-  margin: 0;
-  padding: 0;
-}
-
-@layer utilities {
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  .backface-hidden {
-    backface-visibility: hidden;
+@layer base {
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

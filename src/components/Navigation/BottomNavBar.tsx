@@ -7,25 +7,25 @@ interface NavProps {
 
 export default function BottomNavBar({ currentTab }: NavProps) {
   return (
-    <nav className="bg-surface border-t-2 border-foreground pb-8 pt-3 px-6 flex justify-between items-center z-50 transition-colors shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-      <Link href="/dashboard" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'home' ? 'text-primary' : 'text-text-secondary hover:text-foreground'}`}>
-        <Home size={24} strokeWidth={currentTab === 'home' ? 3 : 2} className={currentTab === 'home' ? 'drop-shadow-[0_0_8px_rgba(206,246,112,0.5)]' : ''} />
-        <span className="text-[10px] font-black mt-1">학습</span>
+    <nav className="fixed bottom-0 left-0 right-0 bg-bg-surface/80 backdrop-blur-xl border-t border-border-color pb-[env(safe-area-inset-bottom,2rem)] pt-3 px-6 flex justify-between items-center z-50 transition-colors shadow-sm">
+      <Link href="/dashboard" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'home' ? 'text-accent-neon' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
+        <Home size={22} strokeWidth={currentTab === 'home' ? 2.5 : 2} />
+        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">홈</span>
       </Link>
       
-      <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'unknown' ? 'text-unknown' : 'text-text-secondary hover:text-unknown'}`}>
-        <XCircle size={24} strokeWidth={currentTab === 'unknown' ? 3 : 2} />
-        <span className="text-[10px] font-black mt-1">못 외움</span>
+      <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'unknown' ? 'text-accent-terra' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
+        <XCircle size={22} strokeWidth={currentTab === 'unknown' ? 2.5 : 2} />
+        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">Skip</span>
       </Link>
  
-      <Link href="/vocabs/confused" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'confused' ? 'text-confused' : 'text-text-secondary hover:text-confused'}`}>
-        <AlertCircle size={24} strokeWidth={currentTab === 'confused' ? 3 : 2} />
-        <span className="text-[10px] font-black mt-1">헷갈림</span>
+      <Link href="/vocabs/confused" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'confused' ? 'text-accent-neon' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
+        <AlertCircle size={22} strokeWidth={currentTab === 'confused' ? 2.5 : 2} />
+        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">Vague</span>
       </Link>
  
-      <Link href="/vocabs/memorized" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'memorized' ? 'text-memorized' : 'text-text-secondary hover:text-memorized'}`}>
-        <CheckCircle2 size={24} strokeWidth={currentTab === 'memorized' ? 3 : 2} />
-        <span className="text-[10px] font-black mt-1">외움</span>
+      <Link href="/vocabs/memorized" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'memorized' ? 'text-accent-neon shadow-[0_0_15px_rgba(206,246,112,0.15)]' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
+        <CheckCircle2 size={22} strokeWidth={currentTab === 'memorized' ? 2.5 : 2} />
+        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">Known</span>
       </Link>
     </nav>
   )

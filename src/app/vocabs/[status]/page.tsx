@@ -31,14 +31,14 @@ function VocabCard({ word }: { word: WordItem }) {
     <motion.div 
       layout
       onClick={() => setIsRevealed(!isRevealed)}
-      className="bg-surface p-5 rounded-xl border border-border-base flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] dark:shadow-none"
+      className="bg-bg-surface p-5 rounded-xl border border-border-color flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer shadow-sm"
     >
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-black text-foreground mt-0 tracking-tight">{word.word}</h3>
             {word.day && (
-              <span className="text-[10px] font-black px-2 py-0.5 bg-background text-text-secondary rounded border border-border-base uppercase tracking-wider">
+              <span className="text-[10px] font-black px-2 py-0.5 bg-bg-base text-text-secondary rounded border border-border-color uppercase tracking-wider">
                 {word.day}
               </span>
             )}
@@ -47,19 +47,19 @@ function VocabCard({ word }: { word: WordItem }) {
           <div className="flex gap-2">
             <button
               onClick={(e) => playWord(e, word.word, 'en-US')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary hover:opacity-90 rounded-lg border-2 border-foreground transition-all shadow-[2px_2px_0px_0px_#1E1E1E]"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
               aria-label="미국식 발음 듣기"
             >
-              <span className="text-[10px] font-black text-[#1E1E1E]">🇺🇸 US</span>
-              <Volume2 className="w-3.5 h-3.5 text-[#1E1E1E]" />
+              <span className="text-[10px] font-black text-text-primary">🇺🇸 US</span>
+              <Volume2 className="w-3 h-3 text-text-primary" />
             </button>
             <button
               onClick={(e) => playWord(e, word.word, 'en-GB')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-secondary hover:opacity-90 rounded-lg border-2 border-foreground transition-all shadow-[2px_2px_0px_0px_#1E1E1E]"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
               aria-label="영국식 발음 듣기"
             >
-              <span className="text-[10px] font-black text-white">🇬🇧 UK</span>
-              <Volume2 className="w-3.5 h-3.5 text-white" />
+              <span className="text-[10px] font-black text-text-primary">🇬🇧 UK</span>
+              <Volume2 className="w-3 h-3 text-text-primary" />
             </button>
           </div>
         </div>
@@ -149,13 +149,13 @@ export default function VocabListPage() {
   }, [status, router, targetScore, supabase])
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background text-foreground font-sans transition-colors">
-      <header className="px-6 py-8 pb-6 bg-surface border-b border-border-base z-10 sticky top-0 flex justify-between items-end shadow-sm transition-colors">
+    <div className="flex flex-col h-[100dvh] bg-bg-base text-text-primary font-sans transition-colors">
+      <header className="px-6 py-8 pb-6 bg-bg-surface border-b border-border-color z-10 sticky top-0 flex justify-between items-end shadow-sm transition-colors">
         <div>
-          <h1 className={`text-3xl font-black tracking-tight ${colorMap[status] || 'text-foreground'}`}>
+          <h1 className={`text-3xl font-black tracking-tight ${colorMap[status] || 'text-text-primary'}`}>
             {titleMap[status] || '단어장'}
           </h1>
-          {!loading && <p className="text-sm font-bold text-text-secondary mt-1 opacity-70">총 {list.length}개의 단어</p>}
+          {!loading && <p className="text-[10px] font-black text-text-secondary mt-1 uppercase tracking-widest opacity-60">총 {list.length}개의 단어</p>}
         </div>
       </header>
 
