@@ -10,9 +10,22 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 import { User } from '@supabase/supabase-js'
 import { WordItem } from '@/utils/words'
+import { Volume2 } from 'lucide-react'
 
 function VocabCard({ word }: { word: WordItem }) {
   const [isRevealed, setIsRevealed] = useState(false)
+
+  const playWord = (e: React.MouseEvent, text: string, lang: 'en-US' | 'en-GB') => {
+    e.stopPropagation(); // 카드 터치 이벤트(뜻 보기) 중단
+    
+    // 내부 프록시 API를 호출하여 브라우저 CORS 및 403 에러 우회
+    const url = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}`;
+    const audio = new Audio(url);
+    
+    audio.play().catch(error => {
+      console.error("Audio playback error:", error);
+    });
+  };
 
   return (
     <motion.div 
@@ -21,13 +34,34 @@ function VocabCard({ word }: { word: WordItem }) {
       className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
     >
       <div className="flex-1">
-        <div className="flex items-center gap-3">
-          <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-0">{word.word}</h3>
-          {word.day && (
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 uppercase tracking-tighter">
-              {word.day}
-            </span>
-          )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-0">{word.word}</h3>
+            {word.day && (
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-md border border-gray-200 dark:border-gray-700 uppercase tracking-tighter">
+                {word.day}
+              </span>
+            )}
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => playWord(e, word.word, 'en-US')}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-700 transition-colors shadow-sm"
+              aria-label="미국식 발음 듣기"
+            >
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">🇺🇸 US</span>
+              <Volume2 className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            </button>
+            <button
+              onClick={(e) => playWord(e, word.word, 'en-GB')}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-700 transition-colors shadow-sm"
+              aria-label="영국식 발음 듣기"
+            >
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">🇬🇧 UK</span>
+              <Volume2 className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            </button>
+          </div>
         </div>
         <AnimatePresence mode="wait">
           {isRevealed ? (
