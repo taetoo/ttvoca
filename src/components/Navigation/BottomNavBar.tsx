@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Home, XCircle, AlertCircle, CheckCircle2 } from 'lucide-react'
 
 interface NavProps {
-  currentTab: 'home' | 'unknown' | 'confused' | 'memorized'
+  currentTab: 'home' | 'unknown' | 'memorized'
 }
 
 export default function BottomNavBar({ currentTab }: NavProps) {
@@ -16,11 +16,6 @@ export default function BottomNavBar({ currentTab }: NavProps) {
       <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'unknown' ? 'text-accent-terra' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
         <XCircle size={22} strokeWidth={currentTab === 'unknown' ? 2.5 : 2} />
         <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">Skip</span>
-      </Link>
- 
-      <Link href="/vocabs/confused" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'confused' ? 'text-accent-neon-text' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
-        <AlertCircle size={22} strokeWidth={currentTab === 'confused' ? 2.5 : 2} />
-        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">Vague</span>
       </Link>
  
       <Link href="/vocabs/memorized" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'memorized' ? 'text-accent-neon-text shadow-[0_0_15px_rgba(206,246,112,0.15)]' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>

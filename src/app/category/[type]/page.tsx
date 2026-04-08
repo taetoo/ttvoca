@@ -11,7 +11,6 @@ interface CategoryPageProps {
 
 const CATEGORY_MAP: Record<string, { label: string; dotClass: string; color: string; }> = {
   unknown: { label: '못 외운 단어', dotClass: 'bg-color-unknown', color: 'text-color-unknown' },
-  confused: { label: '헷갈리는 단어', dotClass: 'bg-color-confused', color: 'text-color-confused' },
   memorized: { label: '외운 단어 (완벽)', dotClass: 'bg-color-memorized', color: 'text-color-memorized' },
 };
 

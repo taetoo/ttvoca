@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type WordStatus = 'unknown' | 'confused' | 'memorized' | null;
+export type WordStatus = 'unknown' | 'memorized' | null;
 
 export interface Word {
   id: string;

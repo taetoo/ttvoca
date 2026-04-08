@@ -91,11 +91,11 @@ export default function StudyPage() {
         studyList = notMemorized.slice(0, 50)
         setTotalCount(studyList.length)
       } else if (learningMode === 'review') {
-        // missedWords가 있으면 그것을 사용하고, 없으면 DB에서 unknown/confused 단어 조회
+        // missedWords가 있으면 그것을 사용하고, 없으면 DB에서 unknown 단어 조회
         if (missedWords.length > 0) {
           studyList = missedWords
         } else {
-          studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown' || statusMap.get(w.id) === 'confused')
+          studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown')
         }
         setTotalCount(studyList.length)
       }
@@ -124,7 +124,7 @@ export default function StudyPage() {
   }, [currentIndex, deck.length, stopTTS])
 
   /** 하단 버튼으로 상태 저장 후 다음 카드로 이동 */
-  const handleStatusAction = async (status: 'unknown' | 'confused' | 'memorized') => {
+  const handleStatusAction = async (status: 'unknown' | 'memorized') => {
     const currentWord = deck[currentIndex]
     if (!currentWord || !user) return
 

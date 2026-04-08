@@ -141,7 +141,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex-1">
                 <h3 className={`text-xl font-black mb-1 ${learningMode === 'review' ? 'text-black' : 'text-text-primary'}`}>오답 집중 복습</h3>
-                <p className={`text-sm font-bold leading-tight ${learningMode === 'review' ? 'text-black/70' : 'text-text-secondary'}`}>모름/헷갈림으로 표시한 단어들을 재학습합니다.</p>
+                <p className={`text-sm font-bold leading-tight ${learningMode === 'review' ? 'text-black/70' : 'text-text-secondary'}`}>모름으로 표시한 단어들을 재학습합니다.</p>
               </div>
             </div>
           </div>

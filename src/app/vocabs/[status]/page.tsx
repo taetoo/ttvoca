@@ -34,20 +34,45 @@ function VocabCard({ word }: { word: WordItem }) {
       className="bg-bg-surface p-5 rounded-xl border border-border-color flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer shadow-sm"
     >
       <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h3 className="text-xl font-black text-foreground mt-0 tracking-tight">{word.word}</h3>
-            {word.day && (
-              <span className="text-[10px] font-black px-2 py-0.5 bg-bg-base text-text-secondary rounded border border-border-color uppercase tracking-wider">
-                {word.day}
-              </span>
-            )}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-xl font-black text-foreground mt-0 tracking-tight truncate">{word.word}</h3>
+              {word.day && (
+                <span className="shrink-0 text-[10px] font-black px-2 py-0.5 bg-bg-base text-text-secondary rounded border border-border-color uppercase tracking-wider">
+                  {word.day}
+                </span>
+              )}
+            </div>
+            <AnimatePresence mode="wait">
+              {isRevealed ? (
+                <motion.p 
+                  key="meaning"
+                  initial={{ opacity: 0, y: -5 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0 }}
+                  className="text-base font-bold text-text-secondary"
+                >
+                  {word.meaning}
+                </motion.p>
+              ) : (
+                <motion.p 
+                  key="hint"
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  exit={{ opacity: 0 }}
+                  className="text-sm font-bold text-text-secondary opacity-30"
+                >
+                  터치해서 뜻 확인
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 shrink-0">
             <button
               onClick={(e) => playWord(e, word.word, 'en-US')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
+              className="flex items-center justify-center gap-1.5 w-[72px] py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
               aria-label="미국식 발음 듣기"
             >
               <span className="text-[10px] font-black text-text-primary">🇺🇸 US</span>
@@ -55,7 +80,7 @@ function VocabCard({ word }: { word: WordItem }) {
             </button>
             <button
               onClick={(e) => playWord(e, word.word, 'en-GB')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
+              className="flex items-center justify-center gap-1.5 w-[72px] py-1.5 bg-bg-base hover:bg-border-color/20 rounded-lg border border-border-color transition-all"
               aria-label="영국식 발음 듣기"
             >
               <span className="text-[10px] font-black text-text-primary">🇬🇧 UK</span>
@@ -63,29 +88,6 @@ function VocabCard({ word }: { word: WordItem }) {
             </button>
           </div>
         </div>
-        <AnimatePresence mode="wait">
-          {isRevealed ? (
-            <motion.p 
-              key="meaning"
-              initial={{ opacity: 0, y: -5 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0 }}
-              className="text-base font-bold text-text-secondary mt-2"
-            >
-              {word.meaning}
-            </motion.p>
-          ) : (
-            <motion.p 
-              key="hint"
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              className="text-sm font-bold text-text-secondary opacity-30 mt-2"
-            >
-              터치해서 뜻 확인
-            </motion.p>
-          )}
-        </AnimatePresence>
       </div>
     </motion.div>
   )
@@ -103,13 +105,11 @@ export default function VocabListPage() {
 
   const titleMap: Record<string, string> = {
     unknown: '못 외운 단어',
-    confused: '헷갈리는 단어',
     memorized: '외운 단어'
   }
   
   const colorMap: Record<string, string> = {
     unknown: 'text-unknown',
-    confused: 'text-confused',
     memorized: 'text-memorized'
   }
 
@@ -178,7 +178,7 @@ export default function VocabListPage() {
         )}
       </main>
 
-      {user && <BottomNavBar currentTab={status as 'unknown' | 'confused' | 'memorized'} />}
+      {user && <BottomNavBar currentTab={status as 'unknown' | 'memorized'} />}
     </div>
   )
 }

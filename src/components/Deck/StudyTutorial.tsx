@@ -45,7 +45,6 @@ export default function StudyTutorial({ onComplete }: StudyTutorialProps) {
               <p className="font-black text-text-primary text-sm">하단 상태 버튼</p>
               <p className="text-xs text-text-secondary mt-0.5">
                 <span className="text-accent-terra font-black">모름</span> · 
-                <span className="text-text-primary font-black"> 헷갈림</span> · 
                 <span className="text-accent-neon-text font-black"> 외움</span>을 눌러 상태를 저장하고 다음 카드로 넘어갑니다.
               </p>
             </div>
