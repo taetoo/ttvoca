@@ -15,7 +15,6 @@ export default function BottomNavigation() {
   const navItems = [
     { href: '/study', label: '학습', icon: BookOpen, count: words.filter(w => w.status === null).length },
     { href: '/vocabs/unknown', label: '못 외운', icon: XCircle, activeColor: 'text-color-unknown', count: getCount('unknown') },
-    { href: '/vocabs/confused', label: '헷갈리는', icon: HelpCircle, activeColor: 'text-color-confused', count: getCount('confused') },
     { href: '/vocabs/memorized', label: '외운', icon: CheckCircle2, activeColor: 'text-color-memorized', count: getCount('memorized') },
   ];
 

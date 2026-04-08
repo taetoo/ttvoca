@@ -37,7 +37,7 @@ export default function Flashcard({ word, meaning, onAction, zIndex }: Flashcard
       }
     } else {
       if (offset.y < -swipeThreshold || velocity.y < -velocityThreshold) {
-        onAction('confused');
+        onAction('unknown');
       }
     }
   };

@@ -95,7 +95,7 @@ function VocabCard({ word }: { word: WordItem }) {
 
 export default function VocabListPage() {
   const params = useParams()
-  const status = params.status as string // 'unknown' | 'confused' | 'memorized'
+  const status = params.status as string // 'unknown' | 'memorized'
   const router = useRouter()
   const supabase = createClient()
   const { targetScore } = useSettingStore()
