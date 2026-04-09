@@ -10,9 +10,10 @@ interface FlashcardProps {
   round: number
   onSwipeNav: (direction: 'prev' | 'next') => void
   audioRef: React.MutableRefObject<HTMLAudioElement | null>
+  preventAutoPlay?: boolean
 }
 
-export default function Flashcard({ word, round, onSwipeNav, audioRef }: FlashcardProps) {
+export default function Flashcard({ word, round, onSwipeNav, audioRef, preventAutoPlay }: FlashcardProps) {
 
   /** TTS 재생 (단어 또는 예문) */
   const playTTS = useCallback((text: string, e?: React.MouseEvent) => {
@@ -32,10 +33,11 @@ export default function Flashcard({ word, round, onSwipeNav, audioRef }: Flashca
 
   /** 카드 마운트 시 단어 TTS 자동 재생 */
   useEffect(() => {
+    if (preventAutoPlay) return;
     const timer = setTimeout(() => playTTS(word.word), 300)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [word.id])
+  }, [word.id, preventAutoPlay])
 
 
   /** 예문 내 핵심 단어 하이라이트 처리 */

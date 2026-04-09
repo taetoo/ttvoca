@@ -81,7 +81,7 @@ export default function ContextualTutorial({ steps, onComplete, storageKey }: Co
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/70 pointer-events-auto"
+        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] pointer-events-auto"
         style={{
           clipPath: targetRect 
             ? `polygon(0% 0%, 0% 100%, ${targetRect.left}px 100%, ${targetRect.left}px ${targetRect.top}px, ${targetRect.right}px ${targetRect.top}px, ${targetRect.right}px ${targetRect.bottom}px, ${targetRect.left}px ${targetRect.bottom}px, ${targetRect.left}px 100%, 100% 100%, 100% 0%)`
@@ -114,13 +114,13 @@ export default function ContextualTutorial({ steps, onComplete, storageKey }: Co
             opacity: 1, 
             scale: 1, 
             top: targetRect 
-              ? (step.position === 'bottom' ? targetRect.bottom + 20 : step.position === 'top' ? targetRect.top - 180 : '50%')
+              ? (step.position === 'bottom' ? targetRect.bottom + 16 : step.position === 'top' ? targetRect.top - 16 : '50%')
               : '50%',
             left: targetRect 
               ? (targetRect.left + targetRect.width / 2)
               : '50%',
             x: '-50%',
-            y: targetRect ? 0 : '-50%'
+            y: !targetRect ? '-50%' : (step.position === 'top' ? '-100%' : '0%')
           }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           className="absolute w-[calc(100%-48px)] max-w-sm bg-bg-surface border border-border-color rounded-2xl p-6 shadow-2xl pointer-events-auto"

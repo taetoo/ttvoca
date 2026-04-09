@@ -24,12 +24,20 @@ export default function StudyPage() {
   const [totalCount, setTotalCount] = useState(0)
   const [memorizedCount, setMemorizedCount] = useState(0)
   const [studyComplete, setStudyComplete] = useState(false)
+  const [isTutorialActive, setIsTutorialActive] = useState(false)
+
+  useEffect(() => {
+    const hasSeen = localStorage.getItem('hasSeenStudyGuideV3')
+    if (!hasSeen) {
+      setIsTutorialActive(true)
+    }
+  }, [])
 
   const studySteps: TutorialStep[] = [
     {
       targetId: 'study-flashcard',
       title: '단어 둘러보기',
-      content: '카드를 터치하면 뜻을 볼 수 있고, 좌우로 스와이프하면 이전/다음 단어를 가볍게 훑어볼 수 있습니다.',
+      content: '카드를 터치하면 뜻을 볼 수 있고, 좌우로 스와이프하면 이전/다음 단어를 가렵게 훑어볼 수 있습니다.',
       position: 'bottom'
     },
     {
@@ -98,7 +106,7 @@ export default function StudyPage() {
         setTotalCount(studyList.length)
       } else if (learningMode === 'review') {
         // missedWords가 있으면 그것을 사용하고, 없으면 DB에서 unknown 단어 조회
-        if (missedWords.length > 0) {
+        if (missedWords && missedWords.length > 0) {
           studyList = missedWords
         } else {
           studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown')
@@ -107,104 +115,97 @@ export default function StudyPage() {
       }
 
       setDeck(studyList)
-      setCurrentIndex(0)
-      setLoading(false)
-
-      // 학습할 단어가 없으면 완료 상태로 설정
       if (studyList.length === 0) {
         setStudyComplete(true)
       }
+      setLoading(false)
     }
 
     fetchUserAndData()
-  }, [targetScore, learningMode, learningDay, missedWords, router, supabase])
+  }, [router, supabase, targetScore, learningMode, learningDay, missedWords])
 
-  /** 스와이프 네비게이션 (상태 저장 없이 이동만) */
-  const handleSwipeNav = useCallback((direction: 'prev' | 'next') => {
+  const currentWord = deck[currentIndex]
+
+  const handleStatusAction = async (status: 'memorized' | 'unknown') => {
+    if (!user || !currentWord) return
+
+    stopTTS()
+
+    // 1. Supabase 업데이트
+    const { error } = await supabase
+      .from('user_word_status')
+      .upsert({
+        user_id: user.id,
+        word_id: currentWord.id,
+        status: status,
+        last_reviewed_at: new Date().toISOString()
+      }, { onConflict: 'user_id,word_id' })
+
+    if (error) {
+      console.error('Status update failed:', error)
+      return
+    }
+
+    // 2. 다음 단어로 이동
+    if (currentIndex < deck.length - 1) {
+      setCurrentIndex(prev => prev + 1)
+      if (status === 'memorized') {
+        setMemorizedCount(prev => prev + 1)
+      }
+    } else {
+      // 학습 완료
+      if (status === 'memorized') {
+        setMemorizedCount(prev => prev + 1)
+      }
+      setStudyComplete(true)
+    }
+  }
+
+  const handleSwipeNav = (direction: 'prev' | 'next') => {
     stopTTS()
     if (direction === 'next' && currentIndex < deck.length - 1) {
       setCurrentIndex(prev => prev + 1)
     } else if (direction === 'prev' && currentIndex > 0) {
       setCurrentIndex(prev => prev - 1)
     }
-  }, [currentIndex, deck.length, stopTTS])
-
-  /** 하단 버튼으로 상태 저장 후 다음 카드로 이동 */
-  const handleStatusAction = async (status: 'unknown' | 'memorized') => {
-    const currentWord = deck[currentIndex]
-    if (!currentWord || !user) return
-
-    stopTTS()
-
-    // Supabase에 상태 저장
-    await supabase
-      .from('user_word_status')
-      .upsert({
-        user_id: user.id,
-        word_id: currentWord.id,
-        status,
-      }, { onConflict: 'user_id,word_id' })
-
-    // 외움 카운트 업데이트
-    if (status === 'memorized') {
-      setMemorizedCount(prev => prev + 1)
-    }
-
-    // 다음 카드 또는 완료
-    if (currentIndex < deck.length - 1) {
-      setCurrentIndex(prev => prev + 1)
-    } else {
-      // 모든 단어 학습 완료
-      setStudyComplete(true)
-    }
   }
 
-  const currentWord = deck[currentIndex]
-  const progress = totalCount > 0 ? (memorizedCount / totalCount) * 100 : 0
-
   return (
-    <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
+    <div className="flex flex-col h-[100dvh] bg-bg-base text-text-primary overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">
       {/* 상단 헤더 */}
-      <header className="px-6 py-4 flex justify-between items-center z-10 w-full shrink-0">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-border-color">
         <button 
           onClick={() => {
             stopTTS()
-            router.push('/dashboard')
+            router.back()
           }}
-          className="p-3 -ml-2 text-text-primary bg-bg-surface border border-border-color rounded-xl shadow-sm active:scale-95 transition-all"
+          className="p-2 -ml-2 text-text-secondary hover:text-text-primary transition-colors"
         >
-          <ArrowLeft size={20} strokeWidth={2.5} />
+          <ArrowLeft size={24} />
         </button>
-        <div className="flex items-center gap-2">
-          {!loading && !studyComplete && (
-            <span className="text-xs font-black text-text-secondary bg-btn-secondary-bg px-4 py-2 rounded-xl border border-border-color tracking-tight">
-              {currentIndex + 1} / {deck.length}
+        
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest opacity-60">
+            {learningMode === 'day' ? `Day ${learningDay}` : learningMode === 'random' ? 'Random Mix' : 'Review Mode'}
+          </span>
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-32 bg-bg-surface rounded-full overflow-hidden border border-border-color">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${totalCount > 0 ? (memorizedCount / totalCount) * 100 : 0}%` }}
+                className="h-full bg-accent-neon shadow-[0_0_10px_rgba(206,246,112,0.3)]"
+              />
+            </div>
+            <span className="text-[10px] font-black text-text-primary">
+              {memorizedCount}/{totalCount}
             </span>
-          )}
+          </div>
+        </div>
+        
+        <div className="w-10 h-10 flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-accent-neon animate-pulse" />
         </div>
       </header>
-      
-      {/* 프로그레스 바 */}
-      {!loading && !studyComplete && (
-        <div className="px-6 mb-4">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest opacity-50">
-              Progress
-            </span>
-            <span className="text-[10px] font-black text-accent-neon-text tracking-wider">
-              {memorizedCount}/{totalCount} ({Math.round(progress)}%)
-            </span>
-          </div>
-          <div className="w-full h-1.5 bg-border-color/30 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-accent-neon rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-          </div>
-        </div>
-      )}
 
       {/* 메인 컨텐츠 */}
       <main className="flex-1 relative flex flex-col items-center justify-center px-6 min-h-0 overflow-y-auto">
@@ -258,6 +259,7 @@ export default function StudyPage() {
                 round={studyRound}
                 onSwipeNav={handleSwipeNav}
                 audioRef={audioRef}
+                preventAutoPlay={isTutorialActive}
               />
             </div>
           </AnimatePresence>
@@ -274,7 +276,7 @@ export default function StudyPage() {
       <ContextualTutorial 
         steps={studySteps} 
         storageKey="hasSeenStudyGuideV3"
-        onComplete={() => {}} 
+        onComplete={() => setIsTutorialActive(false)} 
       />
     </div>
   )
