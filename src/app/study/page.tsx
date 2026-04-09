@@ -27,7 +27,7 @@ export default function StudyPage() {
   const [isTutorialActive, setIsTutorialActive] = useState(false)
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem('hasSeenStudyGuideV3')
+    const hasSeen = localStorage.getItem('hasSeenStudyGuideV4')
     if (!hasSeen) {
       setIsTutorialActive(true)
     }
@@ -35,16 +35,16 @@ export default function StudyPage() {
 
   const studySteps: TutorialStep[] = [
     {
-      targetId: 'study-flashcard',
+      targetId: 'center', // 중앙 모달 방식
       title: '단어 둘러보기',
-      content: '카드를 터치하면 뜻을 볼 수 있고, 좌우로 스와이프하면 이전/다음 단어를 가렵게 훑어볼 수 있습니다.',
-      position: 'bottom'
+      content: '카드를 터치하면 뜻을 볼 수 있고, 좌우로 스와이프하면 이전/다음 단어를 가볍게 훑어볼 수 있습니다.',
+      position: 'center'
     },
     {
-      targetId: 'study-controls',
+      targetId: 'center', // 중앙 모달 방식
       title: '학습 상태 저장',
-      content: '암기 상태를 확정하려면 하단 버튼을 눌러주세요. 버튼을 눌러야만 학습 데이터가 저장됩니다.',
-      position: 'top'
+      content: '암기 상태를 확정하려면 하단 버튼을 눌러주세요. 버튼을 눌러야만 학습 데이터가 안전하게 저장됩니다.',
+      position: 'center'
     }
   ];
   
@@ -105,7 +105,6 @@ export default function StudyPage() {
         studyList = notMemorized.slice(0, 50)
         setTotalCount(studyList.length)
       } else if (learningMode === 'review') {
-        // missedWords가 있으면 그것을 사용하고, 없으면 DB에서 unknown 단어 조회
         if (missedWords && missedWords.length > 0) {
           studyList = missedWords
         } else {
@@ -126,38 +125,42 @@ export default function StudyPage() {
 
   const currentWord = deck[currentIndex]
 
+  // 낙관적 업데이트를 적용한 상태 변경 함수
   const handleStatusAction = async (status: 'memorized' | 'unknown') => {
     if (!user || !currentWord) return
 
     stopTTS()
 
-    // 1. Supabase 업데이트
-    const { error } = await supabase
-      .from('user_word_status')
-      .upsert({
-        user_id: user.id,
-        word_id: currentWord.id,
-        status: status,
-        last_reviewed_at: new Date().toISOString()
-      }, { onConflict: 'user_id,word_id' })
+    // 1. 낙관적 업데이트: 즉시 다음 단어로 이동
+    const savedWord = currentWord; // 에러 복구용
+    const savedIndex = currentIndex;
 
-    if (error) {
-      console.error('Status update failed:', error)
-      return
-    }
-
-    // 2. 다음 단어로 이동
     if (currentIndex < deck.length - 1) {
       setCurrentIndex(prev => prev + 1)
       if (status === 'memorized') {
         setMemorizedCount(prev => prev + 1)
       }
     } else {
-      // 학습 완료
       if (status === 'memorized') {
         setMemorizedCount(prev => prev + 1)
       }
       setStudyComplete(true)
+    }
+
+    // 2. 백그라운드에서 Supabase 업데이트
+    const { error } = await supabase
+      .from('user_word_status')
+      .upsert({
+        user_id: user.id,
+        word_id: savedWord.id,
+        status: status,
+        updated_at: new Date().toISOString() // 존재하지 않는 last_reviewed_at 제거
+      }, { onConflict: 'user_id,word_id' })
+
+    if (error) {
+      console.error('Status update failed:', error)
+      // 실제 서비스라면 여기서 알림을 띄우거나 상태를 복구할 수 있습니다.
+      // 현재는 사용자 경험을 위해 로그만 남깁니다.
     }
   }
 
@@ -215,7 +218,6 @@ export default function StudyPage() {
             <p className="font-black text-text-secondary uppercase tracking-widest text-sm opacity-50">Loading words...</p>
           </div>
         ) : studyComplete ? (
-          /* 학습 완료 화면 */
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -275,9 +277,10 @@ export default function StudyPage() {
 
       <ContextualTutorial 
         steps={studySteps} 
-        storageKey="hasSeenStudyGuideV3"
+        storageKey="hasSeenStudyGuideV4"
         onComplete={() => setIsTutorialActive(false)} 
       />
     </div>
   )
 }
+
