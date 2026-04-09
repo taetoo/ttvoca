@@ -1,4 +1,4 @@
-import rawWordsData from '@/data/words_updated.json'
+import rawWordsData from '@/data/TOEIC_WORDS_UPDATED.json'
 
 export interface WordItem {
   id: number;
@@ -28,7 +28,7 @@ export function getFlatWords(): WordItem[] {
 
   const flatArray: WordItem[] = []
 
-  // words_updated.json 구조: { "600 grade": { "Day 1": { "word": { meaning, example, translation, pos } } } }
+  // TOEIC_WORDS_UPDATED.json 구조: { "600 grade": { "Day 1": { "word": { meaning, example, translation, pos } } } }
   for (const [grade, days] of Object.entries(rawWordsData)) {
     for (const [day, words] of Object.entries(days as Record<string, Record<string, unknown>>)) {
       for (const [word, details] of Object.entries(words as Record<string, { meaning: string; example?: string; translation?: string; pos?: string }>)) {
