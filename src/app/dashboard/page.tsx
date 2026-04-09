@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { useSettingStore } from '@/store/settingStore'
 import BottomNavBar from '@/components/Navigation/BottomNavBar'
-import { Settings, Calendar, Shuffle, AlertCircle, Play } from 'lucide-react'
+import { Settings, Calendar, Shuffle, AlertCircle, Play, Trophy, CheckCircle2 } from 'lucide-react'
 import { User } from '@supabase/supabase-js'
+import { motion } from 'framer-motion'
+import { fetchUserStats, UserStats } from '@/utils/stats'
+import ContextualTutorial, { TutorialStep } from '@/components/Common/ContextualTutorial'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -14,6 +17,22 @@ export default function DashboardPage() {
   const { targetScore, learningMode, learningDay, setLearningMode, setLearningDay, resetStudySession } = useSettingStore()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<UserStats | null>(null)
+
+  const dashboardSteps: TutorialStep[] = [
+    {
+      targetId: 'stats-card',
+      title: '학습 성취도',
+      content: '설정한 목표 점수 단어들을 얼마나 외웠는지 한눈에 보여줍니다. 100%를 향해 달려보세요!',
+      position: 'bottom'
+    },
+    {
+      targetId: 'mode-selector',
+      title: '다양한 학습 모드',
+      content: '날짜별, 무작위, 또는 틀린 단어 복습 중 원하는 방식을 선택할 수 있습니다.',
+      position: 'top'
+    }
+  ];
 
   useEffect(() => {
     const checkUser = async () => {
@@ -23,10 +42,17 @@ export default function DashboardPage() {
         return
       }
       setUser(session.user)
+      
+      // 통계 데이터 가져오기
+      if (targetScore) {
+        const userStats = await fetchUserStats(session.user.id, targetScore)
+        setStats(userStats)
+      }
+      
       setLoading(false)
     }
     checkUser()
-  }, [router, supabase])
+  }, [router, supabase, targetScore])
 
   const handleStart = () => {
     if (!targetScore) {
@@ -62,9 +88,56 @@ export default function DashboardPage() {
       </header>
       
       <main className="flex-1 overflow-y-auto px-6 py-4 pb-48">
-        <div className="mb-10">
-          <h2 className="text-4xl font-black text-foreground mb-2 leading-none">학습 모드</h2>
-          <p className="text-sm font-bold text-text-secondary opacity-70">원하는 학습 방식을 선택하고 시작하세요.</p>
+        {/* Statistics Section */}
+        {targetScore && stats && (
+          <motion.div 
+            id="stats-card"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10 p-6 bg-bg-surface border border-border-color rounded-2xl shadow-sm relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+              <Trophy size={80} strokeWidth={2.5} />
+            </div>
+            
+            <div className="flex justify-between items-end mb-4">
+              <div>
+                <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest opacity-60 mb-1">Total Progress</p>
+                <h2 className="text-3xl font-black text-foreground tracking-tighter">
+                  {targetScore}+ <span className="text-accent-neon-text">Goal</span>
+                </h2>
+              </div>
+              <div className="text-right">
+                <span className="text-4xl font-black text-accent-neon-text">{stats.progress}%</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="w-full h-3 bg-bg-base rounded-full border border-border-color overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${stats.progress}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="h-full bg-accent-neon shadow-[0_0_15px_rgba(206,246,112,0.3)]"
+                />
+              </div>
+              
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 text-accent-neon-text">
+                  <CheckCircle2 size={12} strokeWidth={3} />
+                  <span>{stats.memorizedCount} Memorized</span>
+                </div>
+                <div className="text-text-secondary opacity-60">
+                  <span>{stats.totalCount} Total Words</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        <div className="mb-6">
+          <h2 className="text-2xl font-black text-foreground mb-1 tracking-tight">학습 모드</h2>
+          <p className="text-xs font-bold text-text-secondary opacity-70 italic">어떻게 공부하고 싶으신가요?</p>
         </div>
 
         <div className="space-y-4">
@@ -160,6 +233,12 @@ export default function DashboardPage() {
       </div>
 
       <BottomNavBar currentTab="home" />
+
+      <ContextualTutorial 
+        steps={dashboardSteps} 
+        storageKey="hasSeenDashboardGuide"
+        onComplete={() => {}} 
+      />
     </div>
   )
 }

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { Home, XCircle, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Home, XCircle, CheckCircle2, Search } from 'lucide-react'
 
 interface NavProps {
-  currentTab: 'home' | 'unknown' | 'memorized'
+  currentTab: 'home' | 'unknown' | 'memorized' | 'all'
 }
 
 export default function BottomNavBar({ currentTab }: NavProps) {
@@ -11,6 +11,11 @@ export default function BottomNavBar({ currentTab }: NavProps) {
       <Link href="/dashboard" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'home' ? 'text-accent-neon-text' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
         <Home size={22} strokeWidth={currentTab === 'home' ? 2.5 : 2} />
         <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">홈</span>
+      </Link>
+
+      <Link href="/vocabs/all" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'all' ? 'text-text-primary' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>
+        <Search size={22} strokeWidth={currentTab === 'all' ? 2.5 : 2} />
+        <span className="text-[10px] font-black mt-1 uppercase tracking-tighter">검색</span>
       </Link>
       
       <Link href="/vocabs/unknown" className={`flex flex-col items-center p-2 rounded-xl transition-all w-16 ${currentTab === 'unknown' ? 'text-accent-terra' : 'text-text-secondary opacity-60 hover:opacity-100'}`}>

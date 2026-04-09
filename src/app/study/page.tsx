@@ -10,7 +10,7 @@ import CardControls from '@/components/Deck/CardControls'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Sparkles, Trophy } from 'lucide-react'
 import { User } from '@supabase/supabase-js'
-import StudyTutorial from '@/components/Deck/StudyTutorial'
+import ContextualTutorial, { TutorialStep } from '@/components/Common/ContextualTutorial'
 
 export default function StudyPage() {
   const router = useRouter()
@@ -24,18 +24,24 @@ export default function StudyPage() {
   const [totalCount, setTotalCount] = useState(0)
   const [memorizedCount, setMemorizedCount] = useState(0)
   const [studyComplete, setStudyComplete] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(false)
+
+  const studySteps: TutorialStep[] = [
+    {
+      targetId: 'study-flashcard',
+      title: '단어 둘러보기',
+      content: '카드를 터치하면 뜻을 볼 수 있고, 좌우로 스와이프하면 이전/다음 단어를 가볍게 훑어볼 수 있습니다.',
+      position: 'bottom'
+    },
+    {
+      targetId: 'study-controls',
+      title: '학습 상태 저장',
+      content: '암기 상태를 확정하려면 하단 버튼을 눌러주세요. 버튼을 눌러야만 학습 데이터가 저장됩니다.',
+      position: 'top'
+    }
+  ];
   
   // TTS 오디오 레퍼런스
   const audioRef = useRef<HTMLAudioElement | null>(null)
-
-  // 튜토리얼 첫 방문 체크 (V2: 새 학습 흐름 반영)
-  useEffect(() => {
-    const hasSeen = localStorage.getItem('hasSeenStudyTutorialV2')
-    if (!hasSeen) {
-      setShowTutorial(true)
-    }
-  }, [])
 
   // TTS 정리 함수
   const stopTTS = useCallback(() => {
@@ -243,33 +249,33 @@ export default function StudyPage() {
               </button>
             </div>
           </motion.div>
-        ) : currentWord && !showTutorial ? (
+        ) : currentWord ? (
           <AnimatePresence mode="wait">
-            <Flashcard 
-              key={currentWord.id}
-              word={currentWord} 
-              round={studyRound}
-              onSwipeNav={handleSwipeNav}
-              audioRef={audioRef}
-            />
+            <div id="study-flashcard" className="w-full flex items-center justify-center">
+              <Flashcard 
+                key={currentWord.id}
+                word={currentWord} 
+                round={studyRound}
+                onSwipeNav={handleSwipeNav}
+                audioRef={audioRef}
+              />
+            </div>
           </AnimatePresence>
         ) : null}
       </main>
 
       {/* 하단 컨트롤 */}
       {user && !loading && !studyComplete && currentWord && (
-        <CardControls onAction={handleStatusAction} />
+        <div id="study-controls" className="w-full">
+          <CardControls onAction={handleStatusAction} />
+        </div>
       )}
 
-      {/* 학습 튜토리얼 */}
-      {showTutorial && (
-        <StudyTutorial 
-          onComplete={() => {
-            localStorage.setItem('hasSeenStudyTutorialV2', 'true')
-            setShowTutorial(false)
-          }} 
-        />
-      )}
+      <ContextualTutorial 
+        steps={studySteps} 
+        storageKey="hasSeenStudyGuideV3"
+        onComplete={() => {}} 
+      />
     </div>
   )
 }
