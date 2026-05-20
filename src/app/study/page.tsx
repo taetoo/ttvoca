@@ -2,21 +2,19 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import { getFlatWords, WordItem } from '@/utils/words'
 import { useSettingStore } from '@/store/settingStore'
+import { useWordStatusStore } from '@/store/wordStatusStore'
 import Flashcard from '@/components/Deck/Flashcard'
 import CardControls from '@/components/Deck/CardControls'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Sparkles, Trophy } from 'lucide-react'
-import { User } from '@supabase/supabase-js'
 import ContextualTutorial, { TutorialStep } from '@/components/Common/ContextualTutorial'
 
 export default function StudyPage() {
   const router = useRouter()
-  const supabase = createClient()
   const { targetScore, learningMode, learningDay, studyRound, missedWords, resetStudySession } = useSettingStore()
-  const [user, setUser] = useState<User | null>(null)
+  const setStatus = useWordStatusStore((state) => state.setStatus)
   
   const [deck, setDeck] = useState<WordItem[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -25,12 +23,14 @@ export default function StudyPage() {
   const [memorizedCount, setMemorizedCount] = useState(0)
   const [studyComplete, setStudyComplete] = useState(false)
   const [isTutorialActive, setIsTutorialActive] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     const hasSeen = localStorage.getItem('hasSeenStudyGuideV4')
     if (!hasSeen) {
       setIsTutorialActive(true)
     }
+    setIsMounted(true)
   }, [])
 
   const studySteps: TutorialStep[] = [
@@ -60,24 +60,11 @@ export default function StudyPage() {
   }, [])
 
   useEffect(() => {
-    const fetchUserAndData = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/login')
-        return
-      }
-      setUser(session.user)
+    if (!isMounted) return
 
-      // 사용자별 단어 상태 조회
-      const { data: statusData } = await supabase
-        .from('user_word_status')
-        .select('word_id, status')
-        .eq('user_id', session.user.id)
-
-      const statusMap = new Map<number, string>()
-      statusData?.forEach((item) => {
-        statusMap.set(item.word_id, item.status)
-      })
+    const fetchLocalData = () => {
+      // 로컬 스토어에서 상태 조회
+      const statuses = useWordStatusStore.getState().statuses
 
       let allWords = getFlatWords()
 
@@ -91,12 +78,12 @@ export default function StudyPage() {
       if (learningMode === 'day') {
         const dayWords = allWords.filter(w => w.day === `Day ${learningDay}`)
         setTotalCount(dayWords.length)
-        const memorized = dayWords.filter(w => statusMap.get(w.id) === 'memorized').length
+        const memorized = dayWords.filter(w => statuses[w.id] === 'memorized').length
         setMemorizedCount(memorized)
         // 미학습 단어만
-        studyList = dayWords.filter(w => statusMap.get(w.id) !== 'memorized')
+        studyList = dayWords.filter(w => statuses[w.id] !== 'memorized')
       } else if (learningMode === 'random') {
-        const notMemorized = allWords.filter(w => !statusMap.has(w.id))
+        const notMemorized = allWords.filter(w => statuses[w.id] !== 'memorized')
         // Fisher-Yates Shuffle
         for (let i = notMemorized.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -108,7 +95,7 @@ export default function StudyPage() {
         if (missedWords && missedWords.length > 0) {
           studyList = missedWords
         } else {
-          studyList = allWords.filter(w => statusMap.get(w.id) === 'unknown')
+          studyList = allWords.filter(w => statuses[w.id] === 'unknown')
         }
         setTotalCount(studyList.length)
       }
@@ -120,20 +107,18 @@ export default function StudyPage() {
       setLoading(false)
     }
 
-    fetchUserAndData()
-  }, [router, supabase, targetScore, learningMode, learningDay, missedWords])
+    fetchLocalData()
+  }, [isMounted, targetScore, learningMode, learningDay, missedWords])
 
   const currentWord = deck[currentIndex]
 
-  // 낙관적 업데이트를 적용한 상태 변경 함수
+  // 상태 변경 함수
   const handleStatusAction = async (status: 'memorized' | 'unknown') => {
-    if (!user || !currentWord) return
+    if (!currentWord) return
 
     stopTTS()
 
-    // 1. 낙관적 업데이트: 즉시 다음 단어로 이동
-    const savedWord = currentWord; // 에러 복구용
-    const savedIndex = currentIndex;
+    const savedWord = currentWord; // 로컬 저장용
 
     if (currentIndex < deck.length - 1) {
       setCurrentIndex(prev => prev + 1)
@@ -147,21 +132,8 @@ export default function StudyPage() {
       setStudyComplete(true)
     }
 
-    // 2. 백그라운드에서 Supabase 업데이트
-    const { error } = await supabase
-      .from('user_word_status')
-      .upsert({
-        user_id: user.id,
-        word_id: savedWord.id,
-        status: status,
-        updated_at: new Date().toISOString() // 존재하지 않는 last_reviewed_at 제거
-      }, { onConflict: 'user_id,word_id' })
-
-    if (error) {
-      console.error('Status update failed:', error)
-      // 실제 서비스라면 여기서 알림을 띄우거나 상태를 복구할 수 있습니다.
-      // 현재는 사용자 경험을 위해 로그만 남깁니다.
-    }
+    // 로컬 스토어에 상태 업데이트
+    setStatus(savedWord.id, status)
   }
 
   const handleSwipeNav = (direction: 'prev' | 'next') => {
@@ -171,6 +143,14 @@ export default function StudyPage() {
     } else if (direction === 'prev' && currentIndex > 0) {
       setCurrentIndex(prev => prev - 1)
     }
+  }
+
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-bg-base text-text-primary overflow-hidden font-sans pt-[env(safe-area-inset-top)] justify-center items-center">
+        <div className="w-16 h-16 border-4 border-border-color border-t-accent-neon rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (
@@ -269,7 +249,7 @@ export default function StudyPage() {
       </main>
 
       {/* 하단 컨트롤 */}
-      {user && !loading && !studyComplete && currentWord && (
+      {!loading && !studyComplete && currentWord && (
         <div id="study-controls" className="w-full">
           <CardControls onAction={handleStatusAction} />
         </div>
@@ -283,4 +263,5 @@ export default function StudyPage() {
     </div>
   )
 }
+
 

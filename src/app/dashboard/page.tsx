@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import { useSettingStore } from '@/store/settingStore'
+import { useWordStatusStore } from '@/store/wordStatusStore'
 import BottomNavBar from '@/components/Navigation/BottomNavBar'
 import { Settings, Calendar, Shuffle, AlertCircle, Play, Trophy, CheckCircle2 } from 'lucide-react'
-import { User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
 import { fetchUserStats, UserStats } from '@/utils/stats'
 import ContextualTutorial, { TutorialStep } from '@/components/Common/ContextualTutorial'
 
 export default function DashboardPage() {
   const router = useRouter()
-  const supabase = createClient()
   const { targetScore, learningMode, learningDay, setLearningMode, setLearningDay, resetStudySession } = useSettingStore()
-  const [user, setUser] = useState<User | null>(null)
+  const statuses = useWordStatusStore((state) => state.statuses)
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<UserStats | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   const dashboardSteps: TutorialStep[] = [
     {
@@ -35,24 +34,21 @@ export default function DashboardPage() {
   ];
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/login')
-        return
-      }
-      setUser(session.user)
-      
-      // 통계 데이터 가져오기
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
+    const loadStats = async () => {
       if (targetScore) {
-        const userStats = await fetchUserStats(session.user.id, targetScore)
+        const userStats = await fetchUserStats(targetScore)
         setStats(userStats)
       }
-      
       setLoading(false)
     }
-    checkUser()
-  }, [router, supabase, targetScore])
+    loadStats()
+  }, [targetScore, statuses, isMounted])
 
   const handleStart = () => {
     if (!targetScore) {
@@ -63,7 +59,7 @@ export default function DashboardPage() {
     router.push('/study')
   }
 
-  if (loading) {
+  if (!isMounted || loading) {
     return (
       <div className="flex flex-col h-[100dvh] items-center justify-center bg-background font-sans">
         <div className="w-12 h-12 border-4 border-border-base border-t-primary rounded-full animate-spin"></div>
@@ -140,7 +136,7 @@ export default function DashboardPage() {
           <p className="text-xs font-bold text-text-secondary opacity-70 italic">어떻게 공부하고 싶으신가요?</p>
         </div>
 
-        <div className="space-y-4">
+        <div id="mode-selector" className="space-y-4">
           {/* Day By Day */}
           <div 
             onClick={() => setLearningMode('day')}
@@ -242,3 +238,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

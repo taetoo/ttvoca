@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import { getFlatWords } from '@/utils/words'
 import { useSettingStore } from '@/store/settingStore'
+import { useWordStatusStore } from '@/store/wordStatusStore'
 import BottomNavBar from '@/components/Navigation/BottomNavBar'
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { User } from '@supabase/supabase-js'
 import { WordItem } from '@/utils/words'
 import { Volume2 } from 'lucide-react'
+
 
 function VocabCard({ word }: { word: WordItem }) {
   const [isRevealed, setIsRevealed] = useState(false)
@@ -97,11 +97,11 @@ export default function VocabListPage() {
   const params = useParams()
   const status = params.status as string // 'unknown' | 'memorized'
   const router = useRouter()
-  const supabase = createClient()
   const { targetScore } = useSettingStore()
+  const statuses = useWordStatusStore((state) => state.statuses)
   const [list, setList] = useState<WordItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<User | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   const titleMap: Record<string, string> = {
     unknown: '못 외운 단어',
@@ -114,23 +114,18 @@ export default function VocabListPage() {
   }
 
   useEffect(() => {
-    if (!status) return
+    setIsMounted(true)
+  }, [])
 
-    const fetchList = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/login')
-        return
-      }
-      setUser(session.user)
+  useEffect(() => {
+    if (!status || !isMounted) return
 
-      const { data: statusData } = await supabase
-        .from('user_word_status')
-        .select('word_id, status')
-        .eq('user_id', session.user.id)
-        .eq('status', status)
-
-      const wordIds = new Set(statusData?.map(s => s.word_id))
+    const fetchList = () => {
+      const wordIds = new Set(
+        Object.entries(statuses)
+          .filter(([_, value]) => value === status)
+          .map(([key, _]) => Number(key))
+      )
       
       let allWords = getFlatWords()
       
@@ -146,7 +141,15 @@ export default function VocabListPage() {
     }
 
     fetchList()
-  }, [status, router, targetScore, supabase])
+  }, [status, targetScore, statuses, isMounted])
+
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans justify-center items-center">
+        <div className="w-16 h-16 border-4 border-border-color border-t-accent-neon rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] bg-bg-base text-text-primary font-sans transition-colors">
@@ -178,8 +181,9 @@ export default function VocabListPage() {
         )}
       </main>
 
-      {user && <BottomNavBar currentTab={status as 'unknown' | 'memorized'} />}
+      <BottomNavBar currentTab={status as 'unknown' | 'memorized'} />
     </div>
   )
 }
+
 

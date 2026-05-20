@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import { getFlatWords, WordItem } from '@/utils/words'
 import { useSettingStore } from '@/store/settingStore'
 import QuizCard from '@/components/Quiz/QuizCard'
@@ -22,7 +21,6 @@ function shuffle<T>(arr: T[]): T[] {
 
 export default function QuizPage() {
   const router = useRouter()
-  const supabase = createClient()
   const { targetScore, learningDay, addMissedWord, setQuizResults, setStudyPhase } = useSettingStore()
 
   const [quizWords, setQuizWords] = useState<WordItem[]>([])
@@ -32,20 +30,21 @@ export default function QuizPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<WordItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [timerKey, setTimerKey] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
 
   // 결과 추적
   const [correctCount, setCorrectCount] = useState(0)
   const [incorrectCount, setIncorrectCount] = useState(0)
 
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   /** 데이터 로드 */
   useEffect(() => {
-    const fetchData = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/login')
-        return
-      }
+    if (!isMounted) return
 
+    const fetchData = () => {
       let allWords = getFlatWords()
 
       // 목표점수 필터
@@ -61,7 +60,8 @@ export default function QuizPage() {
     }
 
     fetchData()
-  }, [targetScore, learningDay, router, supabase])
+  }, [targetScore, learningDay, isMounted])
+
 
   /** 현재 문제의 보기 생성 */
   useEffect(() => {
@@ -148,6 +148,14 @@ export default function QuizPage() {
 
   const currentWord = quizWords[currentIndex]
   const progress = quizWords.length > 0 ? ((currentIndex + 1) / quizWords.length) * 100 : 0
+
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans justify-center items-center">
+        <div className="w-16 h-16 border-4 border-border-color border-t-accent-neon rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans transition-colors pt-[env(safe-area-inset-top)]">

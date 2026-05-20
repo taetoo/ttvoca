@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import { getFlatWords, WordItem } from '@/utils/words'
 import { useSettingStore } from '@/store/settingStore'
+import { useWordStatusStore } from '@/store/wordStatusStore'
 import BottomNavBar from '@/components/Navigation/BottomNavBar'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, Volume2, Filter, X, Info } from 'lucide-react'
-import { User } from '@supabase/supabase-js'
 import ContextualTutorial, { TutorialStep } from '@/components/Common/ContextualTutorial'
+
 
 function VocabCard({ word, status }: { word: WordItem; status: string | null }) {
   const [isRevealed, setIsRevealed] = useState(false)
@@ -95,13 +95,12 @@ function VocabCard({ word, status }: { word: WordItem; status: string | null }) 
 
 export default function SearchPage() {
   const router = useRouter()
-  const supabase = createClient()
   const { targetScore } = useSettingStore()
+  const statuses = useWordStatusStore((state) => state.statuses)
   
-  const [user, setUser] = useState<User | null>(null)
   const [allWords, setAllWords] = useState<WordItem[]>([])
-  const [statusMap, setStatusMap] = useState<Map<number, string>>(new Map())
   const [loading, setLoading] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
 
   const searchSteps: TutorialStep[] = [
     {
@@ -123,25 +122,14 @@ export default function SearchPage() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'memorized' | 'unknown' | 'unseen'>('all')
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        router.push('/login')
-        return
-      }
-      setUser(session.user)
+    setIsMounted(true)
+  }, [])
 
-      // 1. 단어 상태 가져오기
-      const { data: statusData } = await supabase
-        .from('user_word_status')
-        .select('word_id, status')
-        .eq('user_id', session.user.id)
+  useEffect(() => {
+    if (!isMounted) return
 
-      const map = new Map<number, string>()
-      statusData?.forEach(s => map.set(s.word_id, s.status))
-      setStatusMap(map)
-
-      // 2. 전체 단어 가져오기 (타켓 등급 필터)
+    const loadData = () => {
+      // 전체 단어 가져오기 (타겟 등급 필터)
       let words = getFlatWords()
       if (targetScore) {
         words = words.filter(w => w.grade?.includes(targetScore.toString()))
@@ -150,13 +138,13 @@ export default function SearchPage() {
       setLoading(false)
     }
 
-    fetchData()
-  }, [router, supabase, targetScore])
+    loadData()
+  }, [targetScore, isMounted])
 
   // 필터링된 리스트
   const filteredList = useMemo(() => {
     return allWords.filter(word => {
-      const status = statusMap.get(word.id) || 'unseen'
+      const status = statuses[word.id] || 'unseen'
       
       // 검색어 체크
       const matchesSearch = word.word.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -167,7 +155,15 @@ export default function SearchPage() {
       
       return matchesSearch && matchesFilter
     })
-  }, [allWords, statusMap, searchQuery, activeFilter])
+  }, [allWords, statuses, searchQuery, activeFilter])
+
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-bg-base overflow-hidden font-sans justify-center items-center">
+        <div className="w-16 h-16 border-4 border-border-color border-t-accent-neon rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] bg-bg-base text-text-primary font-sans transition-colors">
@@ -239,7 +235,7 @@ export default function SearchPage() {
           </div>
         ) : filteredList.length > 0 ? (
           filteredList.map(word => (
-            <VocabCard key={word.id} word={word} status={statusMap.get(word.id) || null} />
+            <VocabCard key={word.id} word={word} status={statuses[word.id] || null} />
           ))
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-text-secondary font-bold mt-20 opacity-40">
@@ -249,7 +245,7 @@ export default function SearchPage() {
         )}
       </main>
 
-      {user && <BottomNavBar currentTab="all" />}
+      <BottomNavBar currentTab="all" />
 
       <ContextualTutorial 
         steps={searchSteps} 
@@ -259,3 +255,4 @@ export default function SearchPage() {
     </div>
   )
 }
+

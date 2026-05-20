@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { WordItem } from '@/utils/words'
 
 export interface UserSettings {
@@ -27,37 +28,45 @@ export interface UserSettings {
   resetStudySession: () => void
 }
 
-export const useSettingStore = create<UserSettings>((set) => ({
-  targetScore: null,
-  theme: 'system',
-  learningMode: 'day',
-  learningDay: 1,
-  
-  // 3-Phase 초기값
-  studyPhase: 'study',
-  studyRound: 1,
-  missedWords: [],
-  quizResults: { correct: 0, incorrect: 0 },
-  
-  // 기본 설정 액션
-  setTargetScore: (score) => set({ targetScore: score }),
-  setTheme: (theme) => set({ theme }),
-  setLearningMode: (mode) => set({ learningMode: mode }),
-  setLearningDay: (day) => set({ learningDay: day }),
-  
-  // Phase 관련 액션
-  setStudyPhase: (phase) => set({ studyPhase: phase }),
-  incrementRound: () => set((state) => ({ studyRound: state.studyRound + 1 })),
-  addMissedWord: (word) => set((state) => ({
-    missedWords: state.missedWords.some(w => w.id === word.id) 
-      ? state.missedWords 
-      : [...state.missedWords, word]
-  })),
-  setQuizResults: (results) => set({ quizResults: results }),
-  resetStudySession: () => set({
-    studyPhase: 'study',
-    studyRound: 1,
-    missedWords: [],
-    quizResults: { correct: 0, incorrect: 0 },
-  }),
-}))
+export const useSettingStore = create<UserSettings>()(
+  persist(
+    (set) => ({
+      targetScore: null,
+      theme: 'system',
+      learningMode: 'day',
+      learningDay: 1,
+      
+      // 3-Phase 초기값
+      studyPhase: 'study',
+      studyRound: 1,
+      missedWords: [],
+      quizResults: { correct: 0, incorrect: 0 },
+      
+      // 기본 설정 액션
+      setTargetScore: (score) => set({ targetScore: score }),
+      setTheme: (theme) => set({ theme }),
+      setLearningMode: (mode) => set({ learningMode: mode }),
+      setLearningDay: (day) => set({ learningDay: day }),
+      
+      // Phase 관련 액션
+      setStudyPhase: (phase) => set({ studyPhase: phase }),
+      incrementRound: () => set((state) => ({ studyRound: state.studyRound + 1 })),
+      addMissedWord: (word) => set((state) => ({
+        missedWords: state.missedWords.some(w => w.id === word.id) 
+          ? state.missedWords 
+          : [...state.missedWords, word]
+      })),
+      setQuizResults: (results) => set({ quizResults: results }),
+      resetStudySession: () => set({
+        studyPhase: 'study',
+        studyRound: 1,
+        missedWords: [],
+        quizResults: { correct: 0, incorrect: 0 },
+      }),
+    }),
+    {
+      name: 'setting-storage',
+    }
+  )
+)
+
